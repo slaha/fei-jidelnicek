@@ -57,8 +57,8 @@ public class DBUtilsDen {
 
 	    cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	      Den comment = cursorToDen(cursor);
-	      dny.add(comment);
+	      Den den = cursorToDen(cursor);
+	      dny.add(den);
 	      cursor.moveToNext();
 	    }
 	    // Make sure to close the cursor
