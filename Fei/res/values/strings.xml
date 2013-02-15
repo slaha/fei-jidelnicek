@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Fei jídelníček</string>
+    <string name="menu_settings">Nastavení</string>
+
+    <string name="refresh">Aktualizovat</string>
+
+    <string name="sett_stecko">Uživatelské jméno (stXXXX)</string>
+    <string name="sett_stecko_desc">Uživatelské jméno, kterým se přihlašujete do STAGu</string>
+    
+    <string name="sett_pass">Heslo</string>
+    <string name="sett_pass_desc">Heslo, jímž se přihlašujete do STAGu</string>
+
+    
+    <string name="dlg_first_run_title">Nastavit údaje</string>
+    <string name="dlg_first_run_message">Nemáte vyplněné ani uživatelské jméno, ani heslo. Chcete jej vyplnit nyní?</string>
+
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="pref_login"
+        android:title="@string/sett_stecko"
+        android:summary="@string/sett_stecko_desc"
+        android:defaultValue="" />
+  	
+  	<EditTextPreference
+        android:key="pref_password"
+        android:inputType="textPassword"
+        android:title="@string/sett_pass"
+        android:summary="@string/sett_pass_desc"
+        android:defaultValue="" />
+</PreferenceScreen>
