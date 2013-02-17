@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="fei">FEI</string>
+    <string name="kampus">Kampus</string>
 
-    <string name="app_name">Fei jídelníček</string>
+    <string name="app_name">UPCE jídelníček</string>
     <string name="menu_settings">Nastavení</string>
 
     <string name="refresh">Aktualizovat</string>
+    <string name="refresh_all">Aktualizovat vše</string>
 
+
+    <string name="sett_application">Nastavení aplikace</string>
+    <string name="sett_download_fei">Stahovat i menzu na FEI</string>
+    <string name="sett_default_screen">Výchozí jídelníček</string>
+    <string name="sett_default_screen_desc">Bude zobrazen po spuštění aplikace jako první</string>
+    <string name="sett_fei_menza">Jídelna na FEI</string>
+
+    
     <string name="sett_stecko">Uživatelské jméno (stXXXX)</string>
     <string name="sett_stecko_desc">Uživatelské jméno, kterým se přihlašujete do STAGu</string>
     
@@ -13,7 +24,10 @@
     <string name="sett_pass_desc">Heslo, jímž se přihlašujete do STAGu</string>
 
     
-    <string name="dlg_first_run_title">Nastavit údaje</string>
-    <string name="dlg_first_run_message">Nemáte vyplněné ani uživatelské jméno, ani heslo. Chcete jej vyplnit nyní?</string>
+    <string name="dlg_first_run_title">Vítejte</string>
+    <string name="dlg_first_run_message">Zdá se, že toto je poprve, kdy jste spustili aplikaci UPCE jídelníček. Přejete si nyní nastavit aplikaci?</string>
+    <string name="dlg_update">Poslední aktualizace byla provedena minulý týden. Aktualizovat?</string>
 
+    <string name="err_document_null">Nepodařilo se stáhnout jídelníček</string>
+    <string name="err_document_parse">Nepodařilo se naparsovat jídelníček. Asi se změnila struktura webu.</string>
 </resources>

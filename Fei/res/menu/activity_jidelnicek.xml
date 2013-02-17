@@ -5,7 +5,11 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
-    
+     <item
+        android:id="@+id/menu_refreshAll"
+        android:orderInCategory="90"
+        android:showAsAction="never"
+        android:title="@string/refresh_all"/>
       <item
           android:id="@+id/menu_refresh"
           android:icon="@android:drawable/ic_popup_sync"

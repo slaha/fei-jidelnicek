@@ -1,15 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference
-        android:key="pref_login"
-        android:title="@string/sett_stecko"
-        android:summary="@string/sett_stecko_desc"
-        android:defaultValue="" />
-  	
-  	<EditTextPreference
-        android:key="pref_password"
-        android:inputType="textPassword"
-        android:title="@string/sett_pass"
-        android:summary="@string/sett_pass_desc"
-        android:defaultValue="" />
+    
+    <PreferenceCategory 
+        android:title="@string/sett_application"
+        android:key="pref_fei_menza">
+        
+        <CheckBoxPreference
+	        android:key="pref_download_fei"
+	        android:title="@string/sett_download_fei"
+	        android:defaultValue="false" />
+        
+        <ListPreference
+	        android:dependency="pref_download_fei"
+	        android:key="pref_default_fragment"
+	        android:title="@string/sett_default_screen"
+	        android:summary="@string/sett_default_screen_desc"
+	        android:dialogTitle="@string/sett_default_screen"
+	        android:entries="@array/default_screen"
+	        android:entryValues="@array/default_screen"
+	        android:defaultValue="@string/kampus" />
+     </PreferenceCategory>
+     
+     <PreferenceCategory 
+        android:title="@string/sett_fei_menza"
+        android:key="pref_fei_menza">
+        
+	    <EditTextPreference
+	        android:key="pref_login"
+	        android:title="@string/sett_stecko"
+	        android:summary="@string/sett_stecko_desc"
+	        android:defaultValue="" 
+	        android:dependency="pref_download_fei"
+	        />
+	  	
+	  	<EditTextPreference
+	        android:key="pref_password"
+	        android:inputType="textPassword"
+	        android:title="@string/sett_pass"
+	        android:summary="@string/sett_pass_desc"
+	        android:defaultValue="" 
+	        android:dependency="pref_download_fei"/>
+     </PreferenceCategory>
 </PreferenceScreen>
