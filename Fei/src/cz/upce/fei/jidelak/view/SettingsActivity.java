@@ -1,6 +1,5 @@
 package cz.upce.fei.jidelak.view;
 
-import android.R.anim;
 import android.R.string;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -37,7 +36,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
     	AlertDialog.Builder adb = new AlertDialog.Builder(this);
     	
     	adb.setTitle(getText(string.dialog_alert_title))
-    	.setMessage("Změna se projeví až po restartu aplikace")
+    	.setMessage(getText(R.string.dlg_restart_needed))
     	.setPositiveButton(string.ok, null);
     	
     	return adb.create();

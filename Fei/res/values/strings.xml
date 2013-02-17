@@ -27,6 +27,9 @@
     <string name="dlg_first_run_title">Vítejte</string>
     <string name="dlg_first_run_message">Zdá se, že toto je poprve, kdy jste spustili aplikaci UPCE jídelníček. Přejete si nyní nastavit aplikaci?</string>
     <string name="dlg_update">Poslední aktualizace byla provedena minulý týden. Aktualizovat?</string>
+    <string name="dlg_restart_needed">Změna se projeví až po restartu aplikace</string>
+    <string name="dlg_login">Zadejte login (stXXXXX):</string>
+    <string name="dlg_password">Zadejte heslo:</string>
 
     <string name="err_document_null">Nepodařilo se stáhnout jídelníček</string>
     <string name="err_document_parse">Nepodařilo se naparsovat jídelníček. Asi se změnila struktura webu.</string>

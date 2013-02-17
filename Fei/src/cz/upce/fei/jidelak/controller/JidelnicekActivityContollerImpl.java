@@ -252,7 +252,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		};
 
 		AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
-		alert.setTitle("Zadejte jméno")
+		alert.setTitle(ctx.getText(R.string.dlg_login))
 		.setView(input)
 		.setPositiveButton(android.R.string.ok, ocl)
 		.setNegativeButton(android.R.string.cancel, ocl);
@@ -288,7 +288,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 		
 		AlertDialog.Builder passwordDialog = new AlertDialog.Builder(ctx);
-		passwordDialog.setTitle("Zadejte heslo")
+		passwordDialog.setTitle(ctx.getText(R.string.dlg_password))
 		.setView(input)
 
 		.setPositiveButton(android.R.string.ok, ocl)
