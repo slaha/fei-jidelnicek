@@ -17,24 +17,16 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f09000e;
-        public static final int LinearLayoutParent=0x7f09000b;
+        public static final int LinearLayout1=0x7f090002;
+        public static final int LinearLayoutParent=0x7f090004;
         public static final int den=0x7f090003;
-        public static final int jidlo1=0x7f090005;
-        public static final int jidlo2=0x7f090006;
-        public static final int jidlo3=0x7f090007;
-        public static final int jidloBezmase=0x7f090008;
-        public static final int menu_refresh=0x7f090011;
-        public static final int menu_refreshAll=0x7f090010;
-        public static final int menu_settings=0x7f09000f;
+        public static final int menu_refresh=0x7f090009;
+        public static final int menu_refreshAll=0x7f090008;
+        public static final int menu_settings=0x7f090007;
         public static final int pager=0x7f090000;
         public static final int pager_title_strip=0x7f090001;
-        public static final int polivka=0x7f090004;
-        public static final int progressBar1=0x7f09000c;
-        public static final int scrollView1=0x7f09000d;
-        public static final int tableRow1=0x7f090002;
-        public static final int vecere1=0x7f090009;
-        public static final int vecere2=0x7f09000a;
+        public static final int progressBar1=0x7f090005;
+        public static final int scrollView1=0x7f090006;
     }
     public static final class layout {
         public static final int activity_jidelnicek=0x7f030000;
@@ -48,9 +40,12 @@ public final class R {
         public static final int app_name=0x7f060002;
         public static final int dlg_first_run_message=0x7f060010;
         public static final int dlg_first_run_title=0x7f06000f;
+        public static final int dlg_login=0x7f060013;
+        public static final int dlg_password=0x7f060014;
+        public static final int dlg_restart_needed=0x7f060012;
         public static final int dlg_update=0x7f060011;
-        public static final int err_document_null=0x7f060012;
-        public static final int err_document_parse=0x7f060013;
+        public static final int err_document_null=0x7f060015;
+        public static final int err_document_parse=0x7f060016;
         public static final int fei=0x7f060000;
         public static final int kampus=0x7f060001;
         public static final int menu_settings=0x7f060003;
