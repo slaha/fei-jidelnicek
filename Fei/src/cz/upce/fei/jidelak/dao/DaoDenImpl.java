@@ -19,12 +19,11 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 	// Database fields
 	private SQLiteDatabase database;
 	private DBUtils dbHelper;
-	private String[] allColumns = { DBUtils.COLUMN_DEN, DBUtils.COLUMN_POLIVKA,
-			DBUtils.COLUMN_JIDLO_1, DBUtils.COLUMN_JIDLO_2,
-			DBUtils.COLUMN_JIDLO_3, DBUtils.COLUMN_BEZMASE,
-			DBUtils.COLUMN_VECERE_1, DBUtils.COLUMN_VECERE_2 };
+	private static final String[] dnyColumns = { DBUtils.COLUMN_ID, DBUtils.COLUMN_DEN };
+	private static final String[] jidlaColumns = { DBUtils.COLUMN_JIDLO };
 
-	private static final String WHERE = DBUtils.COLUMN_TYP + " like ?";
+	private static final String WHERE_TYP = DBUtils.COLUMN_TYP + " like ?";
+	private static final String WHERE_DEN_ID = DBUtils.COLUMN_ID_DEN + " = ?";
 	
 	public DaoDenImpl(Context context) {
 		dbHelper = new DBUtils(context);
@@ -42,7 +41,7 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 
 	@Override
 	public void saveAll(List<IDenniJidelnicek> dny, JidelnicekTyp typ) {
-		database.delete(DBUtils.TABLE_JIDLA, WHERE, new String[] { typ.toString() });
+		database.delete(DBUtils.TABLE_DNY, WHERE_TYP, new String[] { typ.toString() });
 
 		for (IDenniJidelnicek den : dny) {
 			insertDay(den, typ);
@@ -50,28 +49,28 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 	}
 
 	private void insertDay(IDenniJidelnicek d, JidelnicekTyp typ) {
-		ContentValues values = new ContentValues();
-		values.put(DBUtils.COLUMN_DEN, d.getDen());
-		values.put(DBUtils.COLUMN_POLIVKA, d.getPolivka());
-		values.put(DBUtils.COLUMN_JIDLO_1, d.getJidlo1());
-		values.put(DBUtils.COLUMN_JIDLO_2, d.getJidlo2());
-		values.put(DBUtils.COLUMN_JIDLO_3, d.getJidlo3());
+		ContentValues den = new ContentValues();
+		den.put(DBUtils.COLUMN_DEN, d.getDen());
+		den.put(DBUtils.COLUMN_TYP, d.getTyp().toString());
 		
-		if (typ == JidelnicekTyp.KAMPUS) {
-			values.put(DBUtils.COLUMN_BEZMASE, d.getBezmase());
-			values.put(DBUtils.COLUMN_VECERE_1, d.getVecere1());
-			values.put(DBUtils.COLUMN_VECERE_2, d.getVecere2());
+		long denID = database.insert(DBUtils.TABLE_DNY, null, den);
+		
+		if (denID >= 0) {
+			ContentValues jidlo;
+			for (String pokrm : d.getJidla()) {
+				jidlo = new ContentValues();
+				jidlo.put(DBUtils.COLUMN_JIDLO, pokrm);
+				jidlo.put(DBUtils.COLUMN_ID_DEN, denID);
+				database.insert(DBUtils.TABLE_JIDLA, null, jidlo);
+			}
 		}
-		
-		values.put(DBUtils.COLUMN_TYP, typ.toString());
-		
-		database.insert(DBUtils.TABLE_JIDLA, null, values);
 	}
 
 	@Override
 	public List<IDenniJidelnicek> getAll(JidelnicekTyp typ) {
 		List<IDenniJidelnicek> dny = new ArrayList<IDenniJidelnicek>();
-		Cursor cursor = database.query(DBUtils.TABLE_JIDLA, allColumns, WHERE,
+		
+		Cursor cursor = database.query(DBUtils.TABLE_DNY, dnyColumns, WHERE_TYP,
 				new String[] { typ.toString() }, null, null, null);
 
 		cursor.moveToFirst();
@@ -85,28 +84,34 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 		return dny;
 	}
 
-	private IDenniJidelnicek cursorToDen(Cursor cursor, JidelnicekTyp typ) {
+	private IDenniJidelnicek cursorToDen(Cursor c, JidelnicekTyp typ) {
+		
+		
 		IDenniJidelnicek d;
+		List<String> jidla = new ArrayList<String>();
+		
+		String denID = c.getString(0);
+		
+		Cursor cursor = database.query(DBUtils.TABLE_JIDLA, jidlaColumns, WHERE_DEN_ID,
+				new String[] { denID }, null, null, DBUtils.COLUMN_ID);
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			jidla.add(cursor.getString(0));
+			cursor.moveToNext();
+		}
+		
 		if (typ == JidelnicekTyp.FEI) {
 			d = new DenniJidelnicekFeiImpl(
-					cursor.getString(0), // den
-					cursor.getString(1), // polivka
-					cursor.getString(2), // jidlo 1
-					cursor.getString(3), // jidlo 2
-					cursor.getString(4) // jidlo 3
+					c.getString(1), // den
+					jidla
 			);
 
 			return d;
 		} else {
 			d = new DenniJidelnicekKampusImpl(
-					cursor.getString(0), // den
-					cursor.getString(1), // polivka
-					cursor.getString(2), // jidlo 1
-					cursor.getString(3), // jidlo 2
-					cursor.getString(4), // jidlo 3
-					cursor.getString(5), // bezmase jidlo
-					cursor.getString(6), // vecere 1
-					cursor.getString(7) // vecere 2
+					c.getString(1), // den
+					jidla
 			);
 		}
 		

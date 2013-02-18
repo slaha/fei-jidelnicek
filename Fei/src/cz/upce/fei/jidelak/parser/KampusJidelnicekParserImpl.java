@@ -103,7 +103,7 @@ public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
 						element.text()
 					);
 			
-			if (!s.isEmpty()) {
+			if (!(s.length() == 0)) {
 				return false;
 			}
 		}
@@ -112,28 +112,41 @@ public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
 	
 	private boolean isFoodRow(Elements cellsOnRow) {
 		
-		return !cellsOnRow.get(1).text().isEmpty();
+		String cell = removeWhiteSpaces(
+					cellsOnRow.get(1).text()
+				);
+				
+		return !(cell.length() == 0);
 	}
 
 	private IDenniJidelnicek getKampusDen(List<Elements> jidlaNaDen) {
 
 		String den, polivka, jidlo1, jidlo2, jidlo3, bezmase, veca1, veca2;
+		List<String> jidla = new ArrayList<String>();
+
 		den = polivka = jidlo1 = jidlo2 =  jidlo3 =  bezmase =  veca1 =  veca2 = null;
 		
 		den = getDen(jidlaNaDen.get(0), jidlaNaDen.get(1));
 		polivka = getPokrm(jidlaNaDen.get(0));
+		jidla.add(polivka);
 		jidlo1 = getPokrm(jidlaNaDen.get(1));
+		jidla.add(jidlo1);
 		jidlo2 = getPokrm(jidlaNaDen.get(2));
+		jidla.add(jidlo2);
 		jidlo3 = getPokrm(jidlaNaDen.get(3));
+		jidla.add(jidlo3);
 		bezmase = getPokrm(jidlaNaDen.get(4));
+		jidla.add(bezmase);
 		
 		if (jidlaNaDen.size() > 5) {
 			veca1 = getPokrm(jidlaNaDen.get(5));
+			jidla.add(veca1);
 			veca2 = getPokrm(jidlaNaDen.get(6));
+			jidla.add(veca2);
 		}
 		
 		
-		return new DenniJidelnicekKampusImpl(den, polivka, jidlo1, jidlo2, jidlo3, bezmase, veca1, veca2);
+		return new DenniJidelnicekKampusImpl(den, jidla);
 		
 	}
 	
@@ -171,8 +184,5 @@ public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
 		return typ + pokrm;
 	}
 	
-	private String removeWhiteSpaces(String s) {
-		return s.replace(((char)160), ' ').trim();
-	}
 }
  

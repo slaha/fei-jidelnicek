@@ -35,4 +35,8 @@ public class AbsParser {
 		
 		return adb.create();
 	}
+	
+	protected String removeWhiteSpaces(String s) {
+		return s.replace(((char)160), ' ').trim();
+	}
 }

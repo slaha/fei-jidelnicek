@@ -6,6 +6,7 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.select.Evaluator.IsEmpty;
 
 import android.R.string;
 
@@ -46,20 +47,25 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 		}
 		
 		ArrayList<IDenniJidelnicek> dny = new ArrayList<IDenniJidelnicek>();
-		String den, polivka, j1, j2, j3;
 		boolean dontSkip = false; //přeskočit publikováno
 		
-		Elements all = content.getElementsByTag(RADEK);
+		Elements allRows = content.getElementsByTag(RADEK);
 		
-		for (int i = 0; i < all.size(); i++) {
-			if (hasStrong(all.get(i)) && dontSkip) {
-				den = all.get(i).text();
-				polivka = all.get(++i).text();
-				j1 = all.get(++i).text();
-				j2 = all.get(++i).text();
-				j3 = all.get(++i).text();
-				dny.add(new DenniJidelnicekFeiImpl(den, polivka, j1, j2, j3));
-			} else if (hasStrong(all.get(i))) {
+		List<String> jidla;
+		
+		for (int i = 0; i < allRows.size(); i++) {
+			if (hasStrong(allRows.get(i)) && dontSkip) {
+				//..je to nový den v jídelníčku
+				
+				jidla = new ArrayList<String>();
+				String den = allRows.get(i).text();
+				
+				do {
+					jidla.add(allRows.get(++i).text());
+				} while(isNotEmptyParagraph(allRows.get(i)));
+				
+				dny.add(new DenniJidelnicekFeiImpl(den, jidla));
+			} else if (hasStrong(allRows.get(i))) {
 				dontSkip = true; //další nepřeskakovat
 			}
 		}	
@@ -67,6 +73,12 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 		return dny;
 	}
 	
+	private boolean isNotEmptyParagraph(Element element) {
+		String text = removeWhiteSpaces(element.text());
+		
+		return (text.length() != 0);
+	}
+
 	private boolean hasStrong(org.jsoup.nodes.Element e) {
 		Elements children = e.children();
 		

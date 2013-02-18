@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:id="@+id/tableRow1"
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dip" >
@@ -13,37 +13,37 @@
 	            android:textSize="20sp"
 	            />
         
-	    <TextView
-	            android:id="@+id/polivka"
-	            android:layout_height="wrap_content"
-	            android:layout_width="match_parent" />
-		 <TextView
-		            android:id="@+id/jidlo1"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" />
-		 <TextView
-		            android:id="@+id/jidlo2"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" />
-		 <TextView
-		            android:id="@+id/jidlo3"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" />
-		 <TextView
-		            android:id="@+id/jidloBezmase"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" 
-		            android:visibility="gone"/>
-		 <TextView
-		            android:id="@+id/vecere1"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" 
-		            android:visibility="gone"/>
-		 <TextView
-		            android:id="@+id/vecere2"
-		            android:layout_height="wrap_content"
-		            android:layout_width="match_parent" 
-		            android:visibility="gone"/>
+<!-- 	    <TextView -->
+<!-- 	            android:id="@+id/polivka" -->
+<!-- 	            android:layout_height="wrap_content" -->
+<!-- 	            android:layout_width="match_parent" /> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/jidlo1" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent" /> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/jidlo2" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent" /> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/jidlo3" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent" /> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/jidloBezmase" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent"  -->
+<!-- 		            android:visibility="gone"/> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/vecere1" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent"  -->
+<!-- 		            android:visibility="gone"/> -->
+<!-- 		 <TextView -->
+<!-- 		            android:id="@+id/vecere2" -->
+<!-- 		            android:layout_height="wrap_content" -->
+<!-- 		            android:layout_width="match_parent"  -->
+<!-- 		            android:visibility="gone"/> -->
 		 
         
     </LinearLayout>
