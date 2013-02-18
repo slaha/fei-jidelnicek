@@ -2,14 +2,13 @@ package cz.upce.fei.jidelak.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.jsoup.select.Evaluator.IsEmpty;
 
 import android.R.string;
-
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.model.DenniJidelnicekFeiImpl;
 import cz.upce.fei.jidelak.model.IDenniJidelnicek;
@@ -84,7 +83,7 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 		
 		if (children.size() == 0) {
 			return false;
-		} else if ("strong".equals(children.get(0).tagName().toLowerCase())) {
+		} else if ("strong".equals(children.get(0).tagName().toLowerCase(Locale.US))) {
 			return true;
 		}
 		

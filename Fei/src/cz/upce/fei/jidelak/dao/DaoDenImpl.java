@@ -1,29 +1,36 @@
 package cz.upce.fei.jidelak.dao;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import cz.upce.fei.jidelak.model.DenniJidelnicekFeiImpl;
-import cz.upce.fei.jidelak.model.DenniJidelnicekKampusImpl;
-import cz.upce.fei.jidelak.model.IDenniJidelnicek;
-import cz.upce.fei.jidelak.model.JidelnicekTyp;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import cz.upce.fei.jidelak.model.DenniJidelnicekFeiImpl;
+import cz.upce.fei.jidelak.model.DenniJidelnicekKampusImpl;
+import cz.upce.fei.jidelak.model.IDenniJidelnicek;
+import cz.upce.fei.jidelak.model.JidelnicekTyp;
 
 public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 
 	// Database fields
 	private SQLiteDatabase database;
 	private DBUtils dbHelper;
-	private static final String[] dnyColumns = { DBUtils.COLUMN_ID, DBUtils.COLUMN_DEN };
-	private static final String[] jidlaColumns = { DBUtils.COLUMN_JIDLO };
 
 	private static final String WHERE_TYP = DBUtils.COLUMN_TYP + " like ?";
-	private static final String WHERE_DEN_ID = DBUtils.COLUMN_ID_DEN + " = ?";
+
+	private static final String SQL_SELECT = 
+				"select " 
+				+ DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + ", " + DBUtils.COLUMN_DEN + ", " + DBUtils.COLUMN_JIDLO 
+				+ " from " + DBUtils.TABLE_DNY
+				+ " left join " + DBUtils.TABLE_JIDLA 
+				+ " on " + DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + " = " + DBUtils.TABLE_JIDLA + "." + DBUtils.COLUMN_ID_DEN
+				+ " where " + DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_TYP + " like ? " 
+				+ " order by " +  DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + ", "+  DBUtils.TABLE_JIDLA + "." + DBUtils.COLUMN_ID + ";";
 	
 	public DaoDenImpl(Context context) {
 		dbHelper = new DBUtils(context);
@@ -68,54 +75,54 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 
 	@Override
 	public List<IDenniJidelnicek> getAll(JidelnicekTyp typ) {
-		List<IDenniJidelnicek> dny = new ArrayList<IDenniJidelnicek>();
 		
-		Cursor cursor = database.query(DBUtils.TABLE_DNY, dnyColumns, WHERE_TYP,
-				new String[] { typ.toString() }, null, null, null);
-
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			IDenniJidelnicek den = cursorToDen(cursor, typ);
-			dny.add(den);
-			cursor.moveToNext();
-		}
-		// Make sure to close the cursor
-		cursor.close();
-		return dny;
+		Cursor c = database.rawQuery(SQL_SELECT, new String[] { typ.toString() });
+		
+		c.moveToFirst();
+		Map<Long, IDenniJidelnicek> mapa = getAllWeek(c, typ);
+		c.close();
+		
+		return getAllWeek(mapa);
 	}
+	
+	private Map<Long, IDenniJidelnicek> getAllWeek(Cursor c, JidelnicekTyp typ) 
+	{
+		Map<Long, IDenniJidelnicek> mapa = new LinkedHashMap<Long, IDenniJidelnicek>();
+		while (!c.isAfterLast()) {
+			long id = c.getLong(0);
+			String den = c.getString(1);
+			String jidlo = c.getString(2);
 
-	private IDenniJidelnicek cursorToDen(Cursor c, JidelnicekTyp typ) {
-		
-		
-		IDenniJidelnicek d;
-		List<String> jidla = new ArrayList<String>();
-		
-		String denID = c.getString(0);
-		
-		Cursor cursor = database.query(DBUtils.TABLE_JIDLA, jidlaColumns, WHERE_DEN_ID,
-				new String[] { denID }, null, null, DBUtils.COLUMN_ID);
+			IDenniJidelnicek denniJidelnicek = mapa.get(id);
+			List<String> jidelnicek;
+			
+			if (denniJidelnicek == null) {
+				jidelnicek = new ArrayList<String>();
+				if (typ == JidelnicekTyp.FEI) {
+					denniJidelnicek = new DenniJidelnicekFeiImpl(den, jidelnicek);
+				} else {
+					denniJidelnicek = new DenniJidelnicekKampusImpl(den, jidelnicek);
+				}
+				mapa.put(id, denniJidelnicek);
+			} else {
+				jidelnicek = denniJidelnicek.getJidla();
+			}
 
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			jidla.add(cursor.getString(0));
-			cursor.moveToNext();
+			jidelnicek.add(jidlo);
+
+			c.moveToNext();
 		}
-		
-		if (typ == JidelnicekTyp.FEI) {
-			d = new DenniJidelnicekFeiImpl(
-					c.getString(1), // den
-					jidla
-			);
-
-			return d;
-		} else {
-			d = new DenniJidelnicekKampusImpl(
-					c.getString(1), // den
-					jidla
-			);
-		}
-		
-		return d;
+		return mapa;
 	}
-
+	
+	private List<IDenniJidelnicek> getAllWeek(Map<Long, IDenniJidelnicek> mapa) {
+		
+		List<IDenniJidelnicek> week = new ArrayList<IDenniJidelnicek>();
+		
+		for (IDenniJidelnicek denniJidelnicek : mapa.values()) {
+			week.add(denniJidelnicek);
+		}
+		
+		return week;
+	}
 }
