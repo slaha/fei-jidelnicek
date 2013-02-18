@@ -39,4 +39,9 @@ public class AbsParser {
 	protected String removeWhiteSpaces(String s) {
 		return s.replace(((char)160), ' ').trim();
 	}
+	
+	protected String capitalizeDay(String den) {
+		char velkePrvni = Character.toUpperCase(den.charAt(0));
+		return velkePrvni + den.substring(1);
+	}
 }

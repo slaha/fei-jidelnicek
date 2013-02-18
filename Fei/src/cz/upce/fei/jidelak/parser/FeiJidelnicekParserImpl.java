@@ -1,11 +1,13 @@
 package cz.upce.fei.jidelak.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import android.R.string;
@@ -20,8 +22,8 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 		super(act);
 	}
 
-	private static final String DIV_CONTENT = "contents";
-	private static final String RADEK = "p";
+	private static final String DIV_CONTENT = "content-text";
+	private static final String DIV = "div";
 	
 	@Override
 	public List<IDenniJidelnicek> parseDocument(Document document) {
@@ -34,7 +36,7 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 					)
 			);
 		}
-		Element content = document.getElementById(DIV_CONTENT);
+		Element content = document.getElementsByClass(DIV_CONTENT).get(0);
 		
 		if (content == null) {
 			showDialog(
@@ -46,32 +48,50 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 		}
 		
 		ArrayList<IDenniJidelnicek> dny = new ArrayList<IDenniJidelnicek>();
-		boolean dontSkip = false; //přeskočit publikováno
 		
-		Elements allRows = content.getElementsByTag(RADEK);
+		Elements allDivs = content.getElementsByTag(DIV);
 		
 		List<String> jidla;
 		
-		for (int i = 0; i < allRows.size(); i++) {
-			if (hasStrong(allRows.get(i)) && dontSkip) {
+		for (int i = 0; i < allDivs.size(); i++) {
+			if (hasStrong(allDivs.get(i))) {
 				//..je to nový den v jídelníčku
 				
 				jidla = new ArrayList<String>();
-				String den = allRows.get(i).text();
+				String den = allDivs.get(i).text();
+				den = capitalizeDay(den);
 				
 				do {
-					jidla.add(allRows.get(++i).text());
-				} while(isNotEmptyParagraph(allRows.get(i)));
+					++i;
+					if (isNotEmptyParagraph(allDivs.get(i))) {
+						jidla.addAll(getJidla(allDivs.get(i)));
+					}
+					//jidla.add(allDivs.get(++i).text());
+				} while(((i+1) < allDivs.size()) && (!hasStrong(allDivs.get(i+1))));
 				
 				dny.add(new DenniJidelnicekFeiImpl(den, jidla));
-			} else if (hasStrong(allRows.get(i))) {
-				dontSkip = true; //další nepřeskakovat
-			}
+			} 
 		}	
-		
+		int varovaniIndex = dny.get(dny.size() -1).getJidla().size() - 1;
+		dny.get(dny.size() -1).getJidla().remove(varovaniIndex);
 		return dny;
 	}
 	
+	private Collection<? extends String> getJidla(Element element) {
+		List<String> jidla = new ArrayList<String>();
+		
+		List<TextNode> radkyJidel = element.textNodes();
+		
+		for (TextNode jidloRadek : radkyJidel) {
+			String jidloRadekStr = removeWhiteSpaces(jidloRadek.text());
+			if (jidloRadekStr.length() > 0) {
+				jidla.add(jidloRadekStr);
+			}
+		}
+		
+		return jidla;
+	}
+
 	private boolean isNotEmptyParagraph(Element element) {
 		String text = removeWhiteSpaces(element.text());
 		

@@ -159,8 +159,7 @@ public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
 					cellsInRowDatum.get(0).text()
 				);
 		
-		char velkePrvni = Character.toUpperCase(den.charAt(0));
-		den = velkePrvni + den.substring(1);
+		den = capitalizeDay(den);
 		return den + " " + datum;
 	}
 

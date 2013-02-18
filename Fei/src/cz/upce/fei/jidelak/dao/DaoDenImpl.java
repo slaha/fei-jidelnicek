@@ -21,16 +21,23 @@ public class DaoDenImpl implements IDao<IDenniJidelnicek> {
 	private SQLiteDatabase database;
 	private DBUtils dbHelper;
 
-	private static final String WHERE_TYP = DBUtils.COLUMN_TYP + " like ?";
+	private static final String WHERE_TYP = DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_TYP + " like ?";
 
-	private static final String SQL_SELECT = 
-				"select " 
-				+ DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + ", " + DBUtils.COLUMN_DEN + ", " + DBUtils.COLUMN_JIDLO 
-				+ " from " + DBUtils.TABLE_DNY
-				+ " left join " + DBUtils.TABLE_JIDLA 
-				+ " on " + DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + " = " + DBUtils.TABLE_JIDLA + "." + DBUtils.COLUMN_ID_DEN
-				+ " where " + DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_TYP + " like ? " 
-				+ " order by " +  DBUtils.TABLE_DNY + "." + DBUtils.COLUMN_ID + ", "+  DBUtils.TABLE_JIDLA + "." + DBUtils.COLUMN_ID + ";";
+	private static final String SQL_SELECT = new StringBuilder()
+				.append("select ") 
+				.append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID).append(", ")
+				.append(DBUtils.COLUMN_DEN).append(", ")
+				.append(DBUtils.COLUMN_JIDLO) 
+				.append(" from ").append(DBUtils.TABLE_DNY)
+				.append(" left join ").append(DBUtils.TABLE_JIDLA) 
+				.append(" on ").append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID)
+				.append(" = ")
+				.append(DBUtils.TABLE_JIDLA).append(".").append(DBUtils.COLUMN_ID_DEN)
+				.append(" where ").append(WHERE_TYP) 
+				.append(" order by ").append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID)
+				.append(", ").append(DBUtils.TABLE_JIDLA).append(".").append(DBUtils.COLUMN_ID)
+				.append(";")
+				.toString();
 	
 	public DaoDenImpl(Context context) {
 		dbHelper = new DBUtils(context);

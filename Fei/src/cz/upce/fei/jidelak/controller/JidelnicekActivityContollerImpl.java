@@ -17,9 +17,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.text.InputType;
 import android.view.View;
-import android.widget.EditText;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.dao.DaoDenImpl;
 import cz.upce.fei.jidelak.dao.IDao;
@@ -49,10 +47,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	List<IJidelnicekFragment> jidelnicky;
 	
 	FragmentPagerAdapter pagerAdapter;
-	
-	String login;
-	String password;
-	
+
 	public JidelnicekActivityContollerImpl(
 				IJidelnicekActivity jidelnicekActivity, 
 				ITydenniJidelnicek kampusTydenniJidelnicek, 
@@ -87,13 +82,8 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 
 	private void startDownloadFei(View progressBar) { 
 		IParser parser = new FeiJidelnicekParserImpl(jidelnicekActivity);
-		AbsJidelnicekDownloader jd = new FeiJidelnicekDownloaderImpl(progressBar, parser, this, login, password);
+		AbsJidelnicekDownloader jd = new FeiJidelnicekDownloaderImpl(progressBar, parser, this);
 		jd.execute();
-		
-		//..restart login & password
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-		login = preferences.getString(SettingsActivity.PREFERENCE_LOGIN, login);
-		password = preferences.getString(SettingsActivity.PREFERENCE_PASSWORD, password);
 	}
 	
 	private void startDownloadKampus(View progressBar) { 
@@ -172,30 +162,30 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		return preferences.getBoolean(SettingsActivity.PREFERENCE_DOWNLOAD_FEI, false);
 	}
 	
-	private boolean isPossibleToDownloadFei() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-		
-		String log = preferences.getString(SettingsActivity.PREFERENCE_LOGIN, "");
-		String pass = preferences.getString(SettingsActivity.PREFERENCE_PASSWORD, "");
-
-		if (log.trim().length() > 0 && pass.trim().length() > 0) {
-			login = log;
-			password = pass;
-			return true;
-		}
-		return false;
-	}
-	
-	private Dialog getFeiDownloadErrorDialog() {
-		if (isLoginEmpty() && isPasswordEmpty()) {
-			return getLoginDialog(true);
-		} else if (isLoginEmpty()) {
-			return getLoginDialog(false);
-		} else if (isPasswordEmpty()) {
-			return getPasswordDialog();
-		}
-		return null;
-	}
+//	private boolean isPossibleToDownloadFei() {
+//		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+//		
+//		String log = preferences.getString(SettingsActivity.PREFERENCE_LOGIN, "");
+//		String pass = preferences.getString(SettingsActivity.PREFERENCE_PASSWORD, "");
+//
+//		if (log.trim().length() > 0 && pass.trim().length() > 0) {
+//			login = log;
+//			password = pass;
+//			return true;
+//		}
+//		return false;
+//	}
+//	
+//	private Dialog getFeiDownloadErrorDialog() {
+//		if (isLoginEmpty() && isPasswordEmpty()) {
+//			return getLoginDialog(true);
+//		} else if (isLoginEmpty()) {
+//			return getLoginDialog(false);
+//		} else if (isPasswordEmpty()) {
+//			return getPasswordDialog();
+//		}
+//		return null;
+//	}
 	
 	@Override
 	public Dialog doRefresh() {
@@ -203,13 +193,13 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		
 		if (currentFragment == feiTydenniJidelnicekFragment) {
 			if (isDownloadFeiEnabled()) {
-				if (isPossibleToDownloadFei()) {
-					///..všecko vyplněný
-					startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
-					return null;
-				} else {
-					return getFeiDownloadErrorDialog();
-				}
+				startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
+				return null;
+//				if (isPossibleToDownloadFei()) {
+//					///..všecko vyplněný
+//				} else {
+//					return getFeiDownloadErrorDialog();
+//				}
 			} else {
 				//..jsme na fei fragmentu, ale je zakázaný ho stahovat
 				return null;
@@ -222,80 +212,80 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		return null;
 	}
 	
-	private boolean isLoginEmpty() {
-		return (login == null) || (login.trim().length() == 0);
-	}
+//	private boolean isLoginEmpty() {
+//		return (login == null) || (login.trim().length() == 0);
+//	}
 
-	private Dialog getLoginDialog(final boolean isPasswordEmptyToo) {
-		final EditText input = new EditText(ctx);
-		
-		OnClickListener ocl = new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
-					login = input.getText().toString(); 
-					
-					if (isPasswordEmptyToo) {
-						jidelnicekActivity.setAndShowDialog(getPasswordDialog());
-					} else {
-						startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
-					}
-					
-					break;
-				case DialogInterface.BUTTON_NEGATIVE:
-					break;
-				}
-				dialog.dismiss();
-			}
-		};
-
-		AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
-		alert.setTitle(ctx.getText(R.string.dlg_login))
-		.setView(input)
-		.setPositiveButton(android.R.string.ok, ocl)
-		.setNegativeButton(android.R.string.cancel, ocl);
-		
-		return alert.create();
-	}
-
-	private boolean isPasswordEmpty() {
-		return (password == null) || (password.trim().length() == 0);
-	}
-
-	private Dialog getPasswordDialog() {
-		
-		final EditText input = new EditText(ctx);
-
-		OnClickListener ocl = new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
-				switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
-					password = input.getText().toString(); 
-					
-					break;
-				case DialogInterface.BUTTON_NEGATIVE:
-					break;
-				}
-				startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
-				dialog.dismiss();
-			}
-		};
-		
-		input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-		
-		AlertDialog.Builder passwordDialog = new AlertDialog.Builder(ctx);
-		passwordDialog.setTitle(ctx.getText(R.string.dlg_password))
-		.setView(input)
-
-		.setPositiveButton(android.R.string.ok, ocl)
-		.setNegativeButton(android.R.string.cancel, ocl);
-		
-		return passwordDialog.create();
-	}
+//	private Dialog getLoginDialog(final boolean isPasswordEmptyToo) {
+//		final EditText input = new EditText(ctx);
+//		
+//		OnClickListener ocl = new OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				
+//				switch (which) {
+//				case DialogInterface.BUTTON_POSITIVE:
+//					login = input.getText().toString(); 
+//					
+//					if (isPasswordEmptyToo) {
+//						jidelnicekActivity.setAndShowDialog(getPasswordDialog());
+//					} else {
+//						startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
+//					}
+//					
+//					break;
+//				case DialogInterface.BUTTON_NEGATIVE:
+//					break;
+//				}
+//				dialog.dismiss();
+//			}
+//		};
+//
+//		AlertDialog.Builder alert = new AlertDialog.Builder(ctx);
+//		alert.setTitle(ctx.getText(R.string.dlg_login))
+//		.setView(input)
+//		.setPositiveButton(android.R.string.ok, ocl)
+//		.setNegativeButton(android.R.string.cancel, ocl);
+//		
+//		return alert.create();
+//	}
+//
+//	private boolean isPasswordEmpty() {
+//		return (password == null) || (password.trim().length() == 0);
+//	}
+//
+//	private Dialog getPasswordDialog() {
+//		
+//		final EditText input = new EditText(ctx);
+//
+//		OnClickListener ocl = new OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				
+//				switch (which) {
+//				case DialogInterface.BUTTON_POSITIVE:
+//					password = input.getText().toString(); 
+//					
+//					break;
+//				case DialogInterface.BUTTON_NEGATIVE:
+//					break;
+//				}
+//				startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
+//				dialog.dismiss();
+//			}
+//		};
+//		
+//		input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+//		
+//		AlertDialog.Builder passwordDialog = new AlertDialog.Builder(ctx);
+//		passwordDialog.setTitle(ctx.getText(R.string.dlg_password))
+//		.setView(input)
+//
+//		.setPositiveButton(android.R.string.ok, ocl)
+//		.setNegativeButton(android.R.string.cancel, ocl);
+//		
+//		return passwordDialog.create();
+//	}
 
 	@Override
 	public void updateDays(List<IDenniJidelnicek> days) {
@@ -357,11 +347,11 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		startDownloadKampus(kampusTydenniJidelnicekFragment.getProgressBar());
 		
 		if (isDownloadFeiEnabled()) {
-			if (isPossibleToDownloadFei()) {
-				startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
-			} else {
-				return getFeiDownloadErrorDialog();
-			}
+			startDownloadFei(feiTydenniJidelnicekFragment.getProgressBar());
+//			if (isPossibleToDownloadFei()) {
+//			} else {
+//				return getFeiDownloadErrorDialog();
+//			}
 		}
 		return null;
 	}

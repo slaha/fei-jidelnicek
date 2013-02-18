@@ -21,24 +21,24 @@
 	        android:defaultValue="@string/kampus" />
      </PreferenceCategory>
      
-     <PreferenceCategory 
-        android:title="@string/sett_fei_menza"
-        android:key="pref_fei_menza">
+<!--      <PreferenceCategory  -->
+<!--         android:title="@string/sett_fei_menza" -->
+<!--         android:key="pref_fei_menza"> -->
         
-	    <EditTextPreference
-	        android:key="pref_login"
-	        android:title="@string/sett_stecko"
-	        android:summary="@string/sett_stecko_desc"
-	        android:defaultValue="" 
-	        android:dependency="pref_download_fei"
-	        />
+<!-- 	    <EditTextPreference -->
+<!-- 	        android:key="pref_login" -->
+<!-- 	        android:title="@string/sett_stecko" -->
+<!-- 	        android:summary="@string/sett_stecko_desc" -->
+<!-- 	        android:defaultValue=""  -->
+<!-- 	        android:dependency="pref_download_fei" -->
+<!-- 	        /> -->
 	  	
-	  	<EditTextPreference
-	        android:key="pref_password"
-	        android:inputType="textPassword"
-	        android:title="@string/sett_pass"
-	        android:summary="@string/sett_pass_desc"
-	        android:defaultValue="" 
-	        android:dependency="pref_download_fei"/>
-     </PreferenceCategory>
+<!-- 	  	<EditTextPreference -->
+<!-- 	        android:key="pref_password" -->
+<!-- 	        android:inputType="textPassword" -->
+<!-- 	        android:title="@string/sett_pass" -->
+<!-- 	        android:summary="@string/sett_pass_desc" -->
+<!-- 	        android:defaultValue=""  -->
+<!-- 	        android:dependency="pref_download_fei"/> -->
+<!--      </PreferenceCategory> -->
 </PreferenceScreen>
