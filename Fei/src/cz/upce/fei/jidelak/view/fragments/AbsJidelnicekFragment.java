@@ -1,5 +1,6 @@
 package cz.upce.fei.jidelak.view.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -32,12 +33,7 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_jidelnicek, null);
-	}
-	
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+		View view = inflater.inflate(R.layout.fragment_jidelnicek, null);
 		
 		layout = (LinearLayout) view.findViewById(R.id.LinearLayout1);
 		progressBar = view.findViewById(R.id.progressBar1);
@@ -45,6 +41,8 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 		if (tydenniJidelnicek != null) {
 			updateJidelnicek();
 		}
+		
+		return view;
 	}
 	
 	@Override
@@ -75,12 +73,6 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 		}
 	}
 	
-	@Override
-	public View getProgressBar() {
-		return progressBar;
-	}
-	
-
 	@Override
 	public ITydenniJidelnicek getJidelnicek() {
 		return tydenniJidelnicek;

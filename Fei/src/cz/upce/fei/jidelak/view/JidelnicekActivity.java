@@ -3,11 +3,15 @@ package cz.upce.fei.jidelak.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.controller.JidelnicekActivityContollerImpl;
@@ -127,5 +131,13 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	@Override
 	public ViewPager getViewPager() {
 		return mViewPager;
+	}
+
+	@Override
+	public View getProgressBar() {
+		Log.i("*****Jidelnicek", "adding view");
+		int index = mViewPager.getCurrentItem();
+		View fr = ((Fragment) controller.getFragments().get(index)).getView();
+		return fr.findViewById(R.id.progressBar1);
 	}
 }

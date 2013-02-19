@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 public interface IJidelnicekActivity {
 
@@ -14,4 +15,6 @@ public interface IJidelnicekActivity {
 	FragmentPagerAdapter getFragmentPagerAdapter();
 	
 	ViewPager getViewPager();
+	
+	View getProgressBar();
 }

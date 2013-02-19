@@ -12,7 +12,6 @@ public interface IJidelnicekFragment {
 	String getName();
 	
 	void updateJidelnicek();
-	View getProgressBar();
 	
 	JidelnicekTyp getTyp();
 }

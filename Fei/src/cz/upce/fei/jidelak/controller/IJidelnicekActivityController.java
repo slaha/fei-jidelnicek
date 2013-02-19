@@ -54,6 +54,4 @@ public interface IJidelnicekActivityController {
 	boolean updateOnNewWeek();
 	
 	Dialog getNewWeekRefreshDialog();
-	
-	
 }

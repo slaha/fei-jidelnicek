@@ -32,7 +32,7 @@ public abstract class AbsJidelnicekDownloader extends AsyncTask<Void, Void, Docu
 	
 	@Override
 	protected void onPreExecute() {
-		progressBar.setVisibility(View.VISIBLE);
+ 		progressBar.setVisibility(View.VISIBLE);
 		super.onPreExecute();
 	}
 	
