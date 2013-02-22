@@ -14,4 +14,6 @@ public interface IJidelnicekFragment {
 	void updateJidelnicek();
 	
 	JidelnicekTyp getTyp();
+	
+	View getProgressBar();
 }

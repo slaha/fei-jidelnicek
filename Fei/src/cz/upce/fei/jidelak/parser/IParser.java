@@ -1,13 +1,12 @@
 package cz.upce.fei.jidelak.parser;
 
-import java.util.List;
-
 import org.jsoup.nodes.Document;
 
-import cz.upce.fei.jidelak.model.IDenniJidelnicek;
+import android.view.View;
+import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 
 public interface IParser {
 	
-	public List<IDenniJidelnicek> parseDocument(Document document);
+	public void parseDocument(Document document, IJidelnicekActivityController ctrl, View pB);
 
 }

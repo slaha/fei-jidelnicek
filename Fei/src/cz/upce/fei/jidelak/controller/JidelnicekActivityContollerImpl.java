@@ -164,18 +164,18 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	
 	@Override
 	public Dialog doRefresh() {
-		IJidelnicekFragment currentFragment = getCurrentFragment();
+		IJidelnicekFragment currentFragment = getCurrentJidelnicekFragment();
 		
 		if (currentFragment == feiTydenniJidelnicekFragment) {
 			if (isDownloadFeiEnabled()) {
-				startDownloadFei(jidelnicekActivity.getProgressBar());
+				startDownloadFei(jidelnicekActivity.getProgressBar(getCurrentFragment()));
 				return null;
 			} else {
 				//..jsme na fei fragmentu, ale je zakázaný ho stahovat
 				return null;
 			}
 		} else if (currentFragment == kampusTydenniJidelnicekFragment) {
-			startDownloadKampus(jidelnicekActivity.getProgressBar());
+			startDownloadKampus(jidelnicekActivity.getProgressBar(getCurrentFragment()));
 			return null;
 		}
 		//..should never happen
@@ -209,40 +209,40 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 
 	@Override
-	public List<IJidelnicekFragment> getFragments() {
-		if (jidelnicky == null) {
-			String kampus = JidelnicekTyp.KAMPUS.toString();
-	
-			jidelnicky = new ArrayList<IJidelnicekFragment>();
-			
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-			String defaultScreen = preferences.getString(SettingsActivity.PREFERENCE_DEFAULT_SCREEN, kampus);
-			
-			jidelnicky.add(kampusTydenniJidelnicekFragment);
-			
-			if (isDownloadFeiEnabled()) {
-				if (defaultScreen.equals(kampus)) {
-					jidelnicky.add(feiTydenniJidelnicekFragment);
-				} else {
-					jidelnicky.add(0, feiTydenniJidelnicekFragment);
-				}
+	public void initFragments() {
+		jidelnicky = new ArrayList<IJidelnicekFragment>();
+
+		String kampus = JidelnicekTyp.KAMPUS.toString();
+		
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+		String defaultScreen = preferences.getString(SettingsActivity.PREFERENCE_DEFAULT_SCREEN, kampus);
+		
+		jidelnicky.add(kampusTydenniJidelnicekFragment);
+		
+		if (isDownloadFeiEnabled()) {
+			if (defaultScreen.equals(kampus)) {
+				jidelnicky.add(feiTydenniJidelnicekFragment);
+			} else {
+				jidelnicky.add(0, feiTydenniJidelnicekFragment);
 			}
 		}
+	}
+	@Override
+	public List<IJidelnicekFragment> getFragments() {
 		
 		return jidelnicky;
 	}
 
-	private IJidelnicekFragment getCurrentFragment() {
-		int currentIndex = jidelnicekActivity.getViewPager().getCurrentItem();
-		return (IJidelnicekFragment) jidelnicekActivity.getFragmentPagerAdapter().getItem(currentIndex);
+	private IJidelnicekFragment getCurrentJidelnicekFragment() {
+		return (IJidelnicekFragment) getCurrentFragment();
 	}
 
 	@Override
 	public Dialog doFullRefresh() {
-		startDownloadKampus(jidelnicekActivity.getProgressBar());
+		startDownloadKampus(jidelnicekActivity.getProgressBar(getCurrentFragment()));
 		
 		if (isDownloadFeiEnabled()) {
-			startDownloadFei(jidelnicekActivity.getProgressBar());
+			startDownloadFei(jidelnicekActivity.getProgressBar(getCurrentFragment()));
 		}
 		return null;
 	}
@@ -292,5 +292,10 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		return cal.get(Calendar.WEEK_OF_YEAR);
+	}
+	
+	private Fragment getCurrentFragment() {
+		int currentIndex = jidelnicekActivity.getViewPager().getCurrentItem();
+		return  jidelnicekActivity.getFragmentPagerAdapter().getItem(currentIndex);
 	}
 }

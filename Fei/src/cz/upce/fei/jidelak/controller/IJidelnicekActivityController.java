@@ -45,7 +45,9 @@ public interface IJidelnicekActivityController {
 	void updateDays(List<IDenniJidelnicek> days);
 
 	List<IJidelnicekFragment> getFragments();
-
+	
+	void initFragments();
+	
 	/**
 	 * Restores state from DB after start
 	 */

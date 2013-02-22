@@ -1,35 +1,37 @@
 package cz.upce.fei.jidelak.view;
 
-import java.util.List;
-
-import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
+import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-	List<IJidelnicekFragment> fragmenty;
+	IJidelnicekActivityController controller;
 	
-	public SectionsPagerAdapter(FragmentManager fm, List<IJidelnicekFragment> list) {
+	public SectionsPagerAdapter(FragmentManager fm, IJidelnicekActivityController controller) {
 		super(fm);
-		
-		this.fragmenty =list;  
+		Log.i("SectionsPagerAdapter", "constructor");
+		this.controller = controller;
+		controller.initFragments();
 	}
 
+	
 	@Override
 	public Fragment getItem(int i) {
-		return (Fragment) fragmenty.get(i);
+		return (Fragment) controller.getFragments().get(i);
 	}
 
 	@Override
 	public int getCount() {
-		return fragmenty.size();
+		return controller.getFragments().size();
 	}
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return fragmenty.get(position).getName();
+		Log.i("SectionsPagerAdapter", "getPsageTitle " + position);
+		return ((IJidelnicekFragment)controller.getFragments().get(position)).getName();
 	}
 }

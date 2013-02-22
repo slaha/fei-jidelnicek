@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.controller.JidelnicekActivityContollerImpl;
@@ -42,8 +41,8 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 		controller = new JidelnicekActivityContollerImpl(this, feiTydenniJidelnicek, kampusTydenniJidelnicek);
 		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
-					getSupportFragmentManager(), 
-					controller.getFragments()
+					getSupportFragmentManager(),
+					controller
 				);
 		
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -134,10 +133,17 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	}
 
 	@Override
-	public View getProgressBar() {
-		Log.i("*****Jidelnicek", "adding view");
-		int index = mViewPager.getCurrentItem();
-		View fr = ((Fragment) controller.getFragments().get(index)).getView();
-		return fr.findViewById(R.id.progressBar1);
+	public View getProgressBar(Fragment fr) {
+		View v = fr.getView();
+		Log.i("*****Jidelnicek", "v je " + v);
+		if (v == null) {
+			return findViewById(R.id.progressBar1);
+		} else {
+			View pb =  v.findViewById(R.id.progressBar1);
+			if (pb != null) {
+				return pb;
+			}
+			return findViewById(R.id.progressBar1);
+		}
 	}
 }

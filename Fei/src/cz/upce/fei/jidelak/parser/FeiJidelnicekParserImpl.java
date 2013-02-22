@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
@@ -16,7 +15,7 @@ import cz.upce.fei.jidelak.model.DenniJidelnicekFeiImpl;
 import cz.upce.fei.jidelak.model.IDenniJidelnicek;
 import cz.upce.fei.jidelak.view.IJidelnicekActivity;
 
-public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
+public class FeiJidelnicekParserImpl extends AbsParser {
 
 	public FeiJidelnicekParserImpl(IJidelnicekActivity act) {
 		super(act);
@@ -26,7 +25,7 @@ public class FeiJidelnicekParserImpl extends AbsParser implements IParser {
 	private static final String DIV = "div";
 	
 	@Override
-	public List<IDenniJidelnicek> parseDocument(Document document) {
+	public List<IDenniJidelnicek> parseDocument() {
 		
 		if (document == null) {
 			showDialog(

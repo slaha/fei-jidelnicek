@@ -3,18 +3,16 @@ package cz.upce.fei.jidelak.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.R.string;
-
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.model.DenniJidelnicekKampusImpl;
 import cz.upce.fei.jidelak.model.IDenniJidelnicek;
 import cz.upce.fei.jidelak.view.IJidelnicekActivity;
 
-public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
+public class KampusJidelnicekParserImpl extends AbsParser {
 
 	private static final String CONTENT = "contentspace";
 	private static final String TABLE = "table";
@@ -26,7 +24,7 @@ public class KampusJidelnicekParserImpl extends AbsParser implements IParser {
 	}
 
 	@Override
-	public List<IDenniJidelnicek> parseDocument(Document document) {
+	public List<IDenniJidelnicek> parseDocument() {
 		List<IDenniJidelnicek> dny = new ArrayList<IDenniJidelnicek>();
 		if (document == null) {
 			showDialog(

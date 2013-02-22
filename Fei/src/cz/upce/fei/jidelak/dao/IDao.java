@@ -2,10 +2,8 @@ package cz.upce.fei.jidelak.dao;
 
 import java.util.List;
 
-import cz.upce.fei.jidelak.model.JidelnicekTyp;
-
-
 import android.database.SQLException;
+import cz.upce.fei.jidelak.model.JidelnicekTyp;
 
 public interface IDao<T> {
 

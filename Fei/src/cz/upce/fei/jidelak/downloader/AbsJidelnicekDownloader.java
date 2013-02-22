@@ -1,7 +1,5 @@
 package cz.upce.fei.jidelak.downloader;
 
-import java.util.List;
-
 import org.jsoup.nodes.Document;
 
 import android.app.AlertDialog;
@@ -12,7 +10,6 @@ import android.os.AsyncTask;
 import android.view.View;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
-import cz.upce.fei.jidelak.model.IDenniJidelnicek;
 import cz.upce.fei.jidelak.parser.IParser;
 
 public abstract class AbsJidelnicekDownloader extends AsyncTask<Void, Void, Document> {
@@ -44,11 +41,11 @@ public abstract class AbsJidelnicekDownloader extends AsyncTask<Void, Void, Docu
 			getErrorDialog(c.getText(android.R.string.dialog_alert_title), c.getText(R.string.err_document_null));
 		} else {
 			
-			List<IDenniJidelnicek> dny = parser.parseDocument(result);
+			parser.parseDocument(result, controller, progressBar);
 			
-			controller.updateDays(dny);
+			//controller.updateDays(dny);
 		}
-		progressBar.setVisibility(View.GONE);
+		//progressBar.setVisibility(View.GONE);
 	}
 	
 	private Dialog getErrorDialog(CharSequence title, CharSequence message) {
@@ -66,4 +63,10 @@ public abstract class AbsJidelnicekDownloader extends AsyncTask<Void, Void, Docu
 		
 		return alert.create();
 	}
+
+	public View getProgressBar() {
+		return progressBar;
+	}
+	
+	
 }
