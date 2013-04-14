@@ -1,45 +1,41 @@
 package cz.upce.fei.jidelak.view;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.controller.JidelnicekActivityContollerImpl;
-import cz.upce.fei.jidelak.model.ITydenniJidelnicek;
-import cz.upce.fei.jidelak.model.TydenniJidelnicekImpl;
+import cz.upce.fei.jidelak.model.JidelnicekTyp;
+import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 
 public class JidelnicekActivity extends FragmentActivity implements IJidelnicekActivity  {
 
-	String login;
-	String password;
+	private IJidelnicekActivityController controller;
+	private Dialog dialog;
+	
+	private FragmentPagerAdapter mSectionsPagerAdapter;
+	private ViewPager mViewPager;
 
-	IJidelnicekActivityController controller;
-	ITydenniJidelnicek feiTydenniJidelnicek;
-	ITydenniJidelnicek kampusTydenniJidelnicek;
-	Dialog dialog;
-	
-	FragmentPagerAdapter mSectionsPagerAdapter;
-	ViewPager mViewPager;
-	
+	private RefreshViewHelper refreshView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jidelnicek);
 
-		feiTydenniJidelnicek = new TydenniJidelnicekImpl();
-		kampusTydenniJidelnicek = new TydenniJidelnicekImpl();
+		controller = new JidelnicekActivityContollerImpl(this);
 
-		controller = new JidelnicekActivityContollerImpl(this, feiTydenniJidelnicek, kampusTydenniJidelnicek);
-		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
 					getSupportFragmentManager(),
 					controller
@@ -58,7 +54,14 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
+		if (controller.updateOnNewWeek()) {
+			if (refreshView == null) {
+				//TODO
+			} else {
+				this.dialog = controller.getNewWeekRefreshDialog(refreshView);
+			}
+		}
 		if (dialog != null) {
 			dialog.show();
 		}
@@ -82,6 +85,10 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_jidelnicek, menu);
+
+		MenuItem item = menu.findItem(R.id.menu_refresh);
+		this.refreshView =  new RefreshViewHelper(item, this);
+
 		return true;
 	}
 
@@ -92,13 +99,10 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 				controller.startSettingsActivity();
 				return true;
 			case R.id.menu_refresh:
-				
-				setAndShowDialog(controller.doRefresh());
+				controller.doRefresh(refreshView);
 				return true;
 			case R.id.menu_refreshAll:
-				do {
-					setAndShowDialog(controller.doFullRefresh());
-				} while (dialog != null);
+					controller.doFullRefresh(refreshView);
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -132,18 +136,4 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 		return mViewPager;
 	}
 
-	@Override
-	public View getProgressBar(Fragment fr) {
-		View v = fr.getView();
-		Log.i("*****Jidelnicek", "v je " + v);
-		if (v == null) {
-			return findViewById(R.id.progressBar1);
-		} else {
-			View pb =  v.findViewById(R.id.progressBar1);
-			if (pb != null) {
-				return pb;
-			}
-			return findViewById(R.id.progressBar1);
-		}
-	}
 }

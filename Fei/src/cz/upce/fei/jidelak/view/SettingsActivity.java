@@ -12,15 +12,13 @@ import cz.upce.fei.jidelak.R;
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceChangeListener {
 	
 	public static String PREFERENCE_IS_FIRST_RUN = "pref_first_run";
-	public static String PREFERENCE_LOGIN = "pref_login";
-	public static String PREFERENCE_PASSWORD = "pref_password";
 	public static String PREFERENCE_DOWNLOAD_FEI = "pref_download_fei";
 	public static String PREFERENCE_DEFAULT_SCREEN = "pref_default_fragment";
 	public static String PREFERENCE_LAST_UPDATE = "pref_last_update";
 	
 	
     @SuppressWarnings("deprecation")
-	@Override
+		@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         

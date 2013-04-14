@@ -1,10 +1,15 @@
 package cz.upce.fei.jidelak.controller;
 
-import java.util.List;
-
 import android.app.Dialog;
-import cz.upce.fei.jidelak.model.IDenniJidelnicek;
+import android.content.Context;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import cz.upce.fei.jidelak.model.JidelnicekTyp;
+import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
+
+import java.util.List;
 
 public interface IJidelnicekActivityController {
 
@@ -22,27 +27,22 @@ public interface IJidelnicekActivityController {
 	/**
 	 * Zaktualizuje jídelníček pro aktuální obrazovku
 	 * @return null, když je vše ok, jinak dialog zobrazující info, co je blbě
+	 * @param imageView
 	 */
-	Dialog doRefresh();
+	void doRefresh(RefreshViewHelper imageView);
 	
 	/**
 	 * Zaktualizuje jídelníček pro obě menzy
 	 * @return null, když je vše ok, jinak dialog zobrazující info, co je blbě
+	 * @param imageView
 	 */
-	Dialog doFullRefresh();
+	void doFullRefresh(RefreshViewHelper imageView);
 	
 	/**
 	 * Vytvoří dialog zobrazený pokud je aplikace spuštěna poprve
 	 * @return dialog
 	 */
 	Dialog getFirstRunDialog();
-	
-
-	/**
-	 * Slouží k aktualizaci stažených dnů
-	 * @param days nově stažené dny
-	 */
-	void updateDays(List<IDenniJidelnicek> days);
 
 	List<IJidelnicekFragment> getFragments();
 	
@@ -55,5 +55,9 @@ public interface IJidelnicekActivityController {
 	
 	boolean updateOnNewWeek();
 	
-	Dialog getNewWeekRefreshDialog();
+	Dialog getNewWeekRefreshDialog(RefreshViewHelper imageView);
+
+	Context getContext();
+
+	void setResult(String result, JidelnicekTyp typ);
 }

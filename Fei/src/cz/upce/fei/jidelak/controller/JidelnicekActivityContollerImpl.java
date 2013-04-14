@@ -1,10 +1,5 @@
 package cz.upce.fei.jidelak.controller;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -13,29 +8,25 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.view.View;
+import android.view.MenuItem;
 import cz.upce.fei.jidelak.R;
-import cz.upce.fei.jidelak.dao.DaoDenImpl;
+import cz.upce.fei.jidelak.dao.JidelnicekDaoImpl;
 import cz.upce.fei.jidelak.dao.IDao;
-import cz.upce.fei.jidelak.downloader.AbsJidelnicekDownloader;
-import cz.upce.fei.jidelak.downloader.FeiJidelnicekDownloaderImpl;
-import cz.upce.fei.jidelak.downloader.KampusJidelnicekDownloaderImpl;
-import cz.upce.fei.jidelak.model.IDenniJidelnicek;
-import cz.upce.fei.jidelak.model.ITydenniJidelnicek;
+import cz.upce.fei.jidelak.downloader.JidelnicekDownloader;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
-import cz.upce.fei.jidelak.parser.FeiJidelnicekParserImpl;
-import cz.upce.fei.jidelak.parser.IParser;
-import cz.upce.fei.jidelak.parser.KampusJidelnicekParserImpl;
+import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 import cz.upce.fei.jidelak.view.IJidelnicekActivity;
 import cz.upce.fei.jidelak.view.SettingsActivity;
-import cz.upce.fei.jidelak.view.fragments.AbsJidelnicekFragment;
 import cz.upce.fei.jidelak.view.fragments.FeiJidelnicekFragmentImpl;
 import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
 import cz.upce.fei.jidelak.view.fragments.KampusJidelnicekFragmentImpl;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class JidelnicekActivityContollerImpl implements IJidelnicekActivityController {
 
@@ -45,51 +36,42 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	IJidelnicekFragment kampusTydenniJidelnicekFragment;
 	IJidelnicekFragment feiTydenniJidelnicekFragment;
 	List<IJidelnicekFragment> jidelnicky;
-	
-	FragmentPagerAdapter pagerAdapter;
 
-	public JidelnicekActivityContollerImpl(
-				IJidelnicekActivity jidelnicekActivity, 
-				ITydenniJidelnicek kampusTydenniJidelnicek, 
-				ITydenniJidelnicek feiTydenniJidelnicek
-				) 
-		{
+	public JidelnicekActivityContollerImpl(IJidelnicekActivity jidelnicekActivity) {
 		
 		this.jidelnicekActivity = jidelnicekActivity;
 		this.ctx = jidelnicekActivity.getContext();
-		
-		createFragments(kampusTydenniJidelnicek, feiTydenniJidelnicek);
+
+		createFragments();
 	}
 	
-	private void createFragments(ITydenniJidelnicek kampusTydenniJidelnicek, ITydenniJidelnicek feiTydenniJidelnicek) {
-		Bundle bdl = new Bundle(1);
-		
+	private void createFragments() {
+
 		this.kampusTydenniJidelnicekFragment = new KampusJidelnicekFragmentImpl();
-		bdl.putSerializable(AbsJidelnicekFragment.KEY_JIDELNICEK, kampusTydenniJidelnicek);
-		
-		((Fragment)kampusTydenniJidelnicekFragment).setArguments(bdl);
-		kampusTydenniJidelnicekFragment.setJidelnicek(kampusTydenniJidelnicek);
 		
 		if (isDownloadFeiEnabled()) {
 			this.feiTydenniJidelnicekFragment = new FeiJidelnicekFragmentImpl();
-		    bdl.putSerializable(AbsJidelnicekFragment.KEY_JIDELNICEK, feiTydenniJidelnicek);
-		    
-		    ((Fragment)feiTydenniJidelnicekFragment).setArguments(bdl);
-		    feiTydenniJidelnicekFragment.setJidelnicek(feiTydenniJidelnicek);
 		}
-		
 	}
 
-	private void startDownloadFei(View progressBar) { 
-		IParser parser = new FeiJidelnicekParserImpl(jidelnicekActivity);
-		AbsJidelnicekDownloader jd = new FeiJidelnicekDownloaderImpl(progressBar, parser, this);
+	private void startDownload(JidelnicekTyp typ, RefreshViewHelper refreshView) {
+		JidelnicekDownloader jd = new JidelnicekDownloader(typ, refreshView, this);
 		jd.execute();
 	}
-	
-	private void startDownloadKampus(View progressBar) { 
-		IParser parser = new KampusJidelnicekParserImpl(jidelnicekActivity);
-		AbsJidelnicekDownloader jd = new KampusJidelnicekDownloaderImpl(progressBar, parser, this);
-		jd.execute();
+
+	@Override
+	public void setResult(String result, JidelnicekTyp typ) {
+		if (result == null || result.isEmpty()) {
+			Dialog dialog = getErrorDialog();
+
+			jidelnicekActivity.setAndShowDialog(dialog);
+		} else {
+			IJidelnicekFragment jidelnicekFragment = getFragment(typ);
+			jidelnicekFragment.setJidelnicek(result);
+			jidelnicekFragment.updateJidelnicek();
+
+			storeToDB(result, typ);
+		}
 	}
 
 	@Override
@@ -99,13 +81,11 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 
 	@Override
 	public void doFullRestore() {
-		IDao<IDenniJidelnicek> dao = new DaoDenImpl(ctx);
+		IDao dao = new JidelnicekDaoImpl(ctx);
 		dao.open();
 		for (IJidelnicekFragment jidelnicekFragment : getFragments()) {
 			
-			List<IDenniJidelnicek> days = dao.getAll(jidelnicekFragment.getTyp());
-			ITydenniJidelnicek jidelnicek = jidelnicekFragment.getJidelnicek();
-			jidelnicek.setDays(days);
+			String jidelnicek = dao.getJidelnicek(jidelnicekFragment.getTyp());
 			jidelnicekFragment.setJidelnicek(jidelnicek);
 			jidelnicekFragment.updateJidelnicek();
 		}
@@ -155,7 +135,18 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 
 	}
 
-	
+	public Dialog getErrorDialog() {
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+		builder.setTitle(ctx.getText(R.string.err_document_null))
+				.setCancelable(false)
+				.setMessage(R.string.err_document_null_msg)
+				.setPositiveButton(android.R.string.ok, null);
+
+		return builder.create();
+
+	}
+
 	private boolean isDownloadFeiEnabled() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
 		
@@ -163,48 +154,27 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 	
 	@Override
-	public Dialog doRefresh() {
+	public void doRefresh(RefreshViewHelper imageView) {
 		IJidelnicekFragment currentFragment = getCurrentJidelnicekFragment();
 		
 		if (currentFragment == feiTydenniJidelnicekFragment) {
 			if (isDownloadFeiEnabled()) {
-				startDownloadFei(jidelnicekActivity.getProgressBar(getCurrentFragment()));
-				return null;
+				startDownload(JidelnicekTyp.FEI, imageView);
+				return;
 			} else {
 				//..jsme na fei fragmentu, ale je zakázaný ho stahovat
-				return null;
+				return;
 			}
 		} else if (currentFragment == kampusTydenniJidelnicekFragment) {
-			startDownloadKampus(jidelnicekActivity.getProgressBar(getCurrentFragment()));
-			return null;
-		}
-		//..should never happen
-		return null;
-	}
-
-	@Override
-	public void updateDays(List<IDenniJidelnicek> days) {
-		if (!days.isEmpty()) {
-			JidelnicekTyp typ = days.get(0).getTyp();
-			IJidelnicekFragment jidelnicekFragment = kampusTydenniJidelnicekFragment;
-			if (typ == JidelnicekTyp.FEI) {
-				jidelnicekFragment = feiTydenniJidelnicekFragment;
-			}
-			jidelnicekFragment.getJidelnicek().setDays(days);
-			jidelnicekFragment.updateJidelnicek();
-			storeToDB(days, typ);
-			
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-			Editor e = preferences.edit();
-			e.putInt(SettingsActivity.PREFERENCE_LAST_UPDATE, getNumberOfCurrentWeek());
-			e.commit();
+			startDownload(JidelnicekTyp.KAMPUS, imageView);
+			return;
 		}
 	}
 
-	private void storeToDB(List<IDenniJidelnicek> days, JidelnicekTyp typ) {
-		IDao<IDenniJidelnicek> dao = new DaoDenImpl(ctx);
+	private void storeToDB(String jidelnicekHtml, JidelnicekTyp typ) {
+		IDao dao = new JidelnicekDaoImpl(ctx);
 		dao.open();
-		dao.saveAll(days, typ);
+		dao.save(jidelnicekHtml, typ);
 		dao.close();
 	}
 
@@ -238,13 +208,12 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 
 	@Override
-	public Dialog doFullRefresh() {
-		startDownloadKampus(jidelnicekActivity.getProgressBar(getCurrentFragment()));
+	public void doFullRefresh(RefreshViewHelper progress) {
+		startDownload(JidelnicekTyp.KAMPUS, progress);
 		
 		if (isDownloadFeiEnabled()) {
-			startDownloadFei(jidelnicekActivity.getProgressBar(getCurrentFragment()));
+			startDownload(JidelnicekTyp.FEI, progress);
 		}
-		return null;
 	}
 
 	@Override
@@ -260,7 +229,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 
 	@Override
-	public Dialog getNewWeekRefreshDialog() {
+	public Dialog getNewWeekRefreshDialog(final RefreshViewHelper imageView) {
 		OnClickListener listener = new OnClickListener() {
 			
 			@Override
@@ -268,7 +237,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 				
 				switch (which) {
 				case DialogInterface.BUTTON_POSITIVE:
-					doFullRefresh();
+					doFullRefresh(imageView);
 					break;
 				case DialogInterface.BUTTON_NEGATIVE:
 					break;
@@ -286,8 +255,13 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		
 		return adb.create();
 	}
-	
-	
+
+	@Override
+	public Context getContext() {
+		return ctx;
+	}
+
+
 	private int getNumberOfCurrentWeek() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -297,5 +271,16 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	private Fragment getCurrentFragment() {
 		int currentIndex = jidelnicekActivity.getViewPager().getCurrentItem();
 		return  jidelnicekActivity.getFragmentPagerAdapter().getItem(currentIndex);
+	}
+
+	private IJidelnicekFragment getFragment(JidelnicekTyp typ) {
+
+		for (IJidelnicekFragment jidelnicekFragment : jidelnicky) {
+			if (jidelnicekFragment.getTyp() == typ) {
+				return jidelnicekFragment;
+			}
+		}
+
+		return  null;
 	}
 }

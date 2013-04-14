@@ -6,24 +6,10 @@
     android:orientation="vertical"
     tools:context=".JidelnicekActivity" >
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <LinearLayout
-            android:id="@+id/LinearLayout1"
+    <WebView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-    </ScrollView>
-
+            android:layout_height="match_parent"
+            android:id="@+id/webView"
+            android:layout_gravity="center"/>
 </LinearLayout>

@@ -5,10 +5,11 @@ import java.util.List;
 import android.database.SQLException;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
 
-public interface IDao<T> {
+public interface IDao {
 
-	List<T> getAll(JidelnicekTyp typ);
-	void saveAll(List<T> ts, JidelnicekTyp typ);
-	void open() throws SQLException; 
+	String getJidelnicek(JidelnicekTyp typ);
+	void save(String jidelnicek, JidelnicekTyp typ);
+
+	void open() throws SQLException;
 	void close();
 }
