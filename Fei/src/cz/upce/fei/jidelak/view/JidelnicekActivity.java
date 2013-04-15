@@ -1,48 +1,41 @@
 package cz.upce.fei.jidelak.view;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.controller.JidelnicekActivityContollerImpl;
-import cz.upce.fei.jidelak.model.JidelnicekTyp;
 import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 
 public class JidelnicekActivity extends FragmentActivity implements IJidelnicekActivity  {
 
+	private static final int SETTINGS_ACTIVITY_RESULT = 0x0001;
+
 	private IJidelnicekActivityController controller;
 	private Dialog dialog;
 	
-	private FragmentPagerAdapter mSectionsPagerAdapter;
+	private FragmentStatePagerAdapter mSectionsPagerAdapter;
+
 	private ViewPager mViewPager;
 
 	private RefreshViewHelper refreshView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jidelnicek);
 
 		controller = new JidelnicekActivityContollerImpl(this);
-
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-					getSupportFragmentManager(),
-					controller
-				);
-		
 		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+		initSectionsPagerAdapter();
 
 		if (controller.isFirstRun()) {
 			dialog = controller.getFirstRunDialog();
@@ -96,7 +89,7 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_settings:
-				controller.startSettingsActivity();
+				startSettingsActivity();
 				return true;
 			case R.id.menu_refresh:
 				controller.doRefresh(refreshView);
@@ -127,7 +120,7 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	}
 
 	@Override
-	public FragmentPagerAdapter getFragmentPagerAdapter() {
+	public FragmentStatePagerAdapter getFragmentPagerAdapter() {
 		return mSectionsPagerAdapter;
 	}
 
@@ -136,4 +129,35 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 		return mViewPager;
 	}
 
+	@Override
+	public void startSettingsActivity() {
+		Intent intent = new Intent(this, SettingsActivity.class);
+		startActivityForResult(intent, SETTINGS_ACTIVITY_RESULT);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case SETTINGS_ACTIVITY_RESULT :
+				if (resultCode == SettingsActivity.CHANGED) {
+					controller.recreateFragments();
+					initSectionsPagerAdapter();
+				}
+				break;
+		}
+	}
+
+
+	private void initSectionsPagerAdapter() {
+		mSectionsPagerAdapter = new SectionsPagerAdapter(
+				getSupportFragmentManager(),
+				controller
+		);
+
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+		for(int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+			mSectionsPagerAdapter.getItem(i);
+		}
+	}
 }

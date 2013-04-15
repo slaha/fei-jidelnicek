@@ -10,7 +10,6 @@ import org.jsoup.select.Elements;
  * User: slaha
  * Date: 2013-04-14
  * Time: 10:20
- * To change this template use File | Settings | File Templates.
  */
 public class FeiHtmlParserImpl implements IHtmlParser {
 

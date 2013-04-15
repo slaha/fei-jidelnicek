@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="css">
+        <item>@string/black_on_white</item>
+        <item>@string/white_on_black</item>
+    </string-array>
+</resources>

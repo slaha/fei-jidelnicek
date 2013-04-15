@@ -1,15 +1,7 @@
 package cz.upce.fei.jidelak.downloader;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
 import cz.upce.fei.jidelak.parser.HtmlParserFactory;
@@ -21,14 +13,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: slaha
  * Date: 2013-04-14
  * Time: 7:43
- * To change this template use File | Settings | File Templates.
  */
 public class JidelnicekDownloader extends AsyncTask<Void, Void, Void> {
 
@@ -58,7 +47,6 @@ public class JidelnicekDownloader extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected void onPreExecute() {
-		Context c = controller.getContext();
 
 		progressBar.startAnimation();
 
@@ -71,7 +59,7 @@ public class JidelnicekDownloader extends AsyncTask<Void, Void, Void> {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpGet get = new HttpGet(url);
 
-		HttpResponse response = null;
+		HttpResponse response;
 		try {
 			response = httpClient.execute(get);
 			String downloadedHtml = EntityUtils.toString(response.getEntity());

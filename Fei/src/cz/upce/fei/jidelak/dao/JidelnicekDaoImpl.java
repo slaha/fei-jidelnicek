@@ -15,32 +15,6 @@ public class JidelnicekDaoImpl implements IDao {
 
 	private static final String WHERE_TYP = DBUtils.COLUMN_JIDELNA + " like ?";
 
-	/*private static final String SQL_SELECT = new StringBuilder()
-				.append("select ") 
-				.append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID).append(", ")
-				.append(DBUtils.COLUMN_DEN).append(", ")
-				.append(DBUtils.COLUMN_JIDLO) 
-				.append(" from ").append(DBUtils.TABLE_DNY)
-				.append(" left join ").append(DBUtils.TABLE_JIDLA) 
-				.append(" on ").append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID)
-				.append(" = ")
-				.append(DBUtils.TABLE_JIDLA).append(".").append(DBUtils.COLUMN_ID_DEN)
-				.append(" where ").append(WHERE_TYP) 
-				.append(" order by ").append(DBUtils.TABLE_DNY).append(".").append(DBUtils.COLUMN_ID)
-				.append(", ").append(DBUtils.TABLE_JIDLA).append(".").append(DBUtils.COLUMN_ID)
-				.append(";")
-				.toString();
-	*/
-
-	private static final String SQL_SELECT = new StringBuilder()
-				.append("select ")
-				.append(DBUtils.COLUMN_ID).append(", ")
-				.append(DBUtils.COLUMN_JIDELNA).append(", ")
-				.append(DBUtils.COLUMN_JIDELNICEK)
-				.append(" from ").append(DBUtils.TABLE_JIDELNICKY)
-				.append(";")
-				.toString();
-
 	public JidelnicekDaoImpl(Context context) {
 		dbHelper = new DBUtils(context);
 	}

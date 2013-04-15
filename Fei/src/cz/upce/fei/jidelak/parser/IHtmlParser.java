@@ -5,7 +5,6 @@ package cz.upce.fei.jidelak.parser;
  * User: slaha
  * Date: 2013-04-14
  * Time: 10:18
- * To change this template use File | Settings | File Templates.
  */
 public interface IHtmlParser {
 

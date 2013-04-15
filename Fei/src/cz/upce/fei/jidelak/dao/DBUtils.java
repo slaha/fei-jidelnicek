@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBUtils extends SQLiteOpenHelper {
 	  
-	public static final String ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys=ON;";
-
 	public static final String TABLE_DNY = "dny";
 	/* public static final String COLUMN_ID = "_id";
 		public static final String COLUMN_DEN = "den";

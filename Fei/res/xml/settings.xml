@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
+    <PreferenceCategory
+            android:title="@string/sett_look"
+            android:key="pref_look">
+
+        <ListPreference
+                android:key="pref_look_css"
+                android:title="@string/sett_look_css"
+                android:summary="@string/sett_look_css_desc"
+                android:dialogTitle="@string/sett_look_css"
+                android:entries="@array/css"
+                android:entryValues="@array/css"
+                android:defaultValue="@string/black_on_white" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory 
         android:title="@string/sett_application"
         android:key="pref_fei_menza">
@@ -19,6 +34,7 @@
 	        android:entries="@array/default_screen"
 	        android:entryValues="@array/default_screen"
 	        android:defaultValue="@string/kampus" />
+
      </PreferenceCategory>
      
 <!--      <PreferenceCategory  -->

@@ -7,7 +7,6 @@ import cz.upce.fei.jidelak.model.JidelnicekTyp;
  * User: slaha
  * Date: 2013-04-14
  * Time: 10:17
- * To change this template use File | Settings | File Templates.
  */
 public class HtmlParserFactory {
 

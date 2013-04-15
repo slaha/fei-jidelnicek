@@ -2,12 +2,11 @@ package cz.upce.fei.jidelak.view;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
-import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
 
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
 	IJidelnicekActivityController controller;
 	
@@ -21,6 +20,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	
 	@Override
 	public Fragment getItem(int i) {
+		Log.i("SectionsPagerAdapter", "getItem " + i);
+		Log.i("SectionsPagerAdapter", controller.getFragments().toString());
 		return (Fragment) controller.getFragments().get(i);
 	}
 
@@ -31,7 +32,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		Log.i("SectionsPagerAdapter", "getPsageTitle " + position);
-		return ((IJidelnicekFragment)controller.getFragments().get(position)).getName();
+		Log.i("SectionsPagerAdapter", "getPageTitle " + position);
+		return controller.getFragments().get(position).getName();
 	}
+
+	@Override
+	public int getItemPosition(Object object) {
+		return controller.getFragments().indexOf(object);
+	}
+
 }

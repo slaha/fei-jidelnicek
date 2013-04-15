@@ -5,9 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 import cz.upce.fei.jidelak.R;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
 
@@ -22,6 +20,7 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 	public void onCreate(Bundle savedInstanceState) {
 		
 		if (savedInstanceState != null) {
+			this.jidelnicek = savedInstanceState.getString(KEY_JIDELNICEK, null);
 		}
 		
 		super.onCreate(savedInstanceState);
@@ -32,7 +31,7 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 		
 		webView = (WebView) view.findViewById(R.id.webView);
 
-		if (jidelnicek != null) {
+		if (webView != null && jidelnicek != null) {
 			updateJidelnicek();
 		}
 		
@@ -43,12 +42,13 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (jidelnicek != null) {
-			outState.putSerializable(KEY_JIDELNICEK, jidelnicek);
+			outState.putString(KEY_JIDELNICEK, jidelnicek);
 		}
 	}
 	
 	@Override
 	public void setJidelnicek(String jidelnicek) {
+
 		this.jidelnicek = jidelnicek;
 	}
 	
@@ -59,11 +59,11 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 			if (webView != null) {
 				webView.clearView();
 
+				String base = "file:///android_asset/";
 				String mime = "text/html";
 				String encoding = "utf-8";
 
-				webView.getSettings().setJavaScriptEnabled(true);
-				webView.loadDataWithBaseURL(null, jidelnicek, mime, encoding, null);
+				webView.loadDataWithBaseURL(base, jidelnicek, mime, encoding, null);
 			}
 		}
 	}
