@@ -7,22 +7,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import cz.upce.fei.jidelak.R;
+import cz.upce.fei.jidelak.controller.PrefferenceManager;
+import cz.upce.fei.jidelak.model.CssTyp;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
+import cz.upce.fei.jidelak.utils.HtmlHelper;
 
 public abstract class AbsJidelnicekFragment extends Fragment implements IJidelnicekFragment {
+
+
+  private static  final String base = "file:///android_asset/";
+  private static  final String mime = "text/html";
+  private static  final String encoding = "utf-8";
 
 	protected WebView webView;
 	protected String jidelnicek;
 
 	public final static String KEY_JIDELNICEK = "key_jidelnicek";
-	
+
+  protected PrefferenceManager prefferenceManager;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
 		if (savedInstanceState != null) {
 			this.jidelnicek = savedInstanceState.getString(KEY_JIDELNICEK, null);
 		}
-		
+
+    this.prefferenceManager = new PrefferenceManager(getActivity());
+
 		super.onCreate(savedInstanceState);
 	}
 	@Override
@@ -59,11 +70,9 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 			if (webView != null) {
 				webView.clearView();
 
-				String base = "file:///android_asset/";
-				String mime = "text/html";
-				String encoding = "utf-8";
-
-				webView.loadDataWithBaseURL(base, jidelnicek, mime, encoding, null);
+        CssTyp css = prefferenceManager.getCssTyp();
+        String styled = HtmlHelper.surroundHtml(jidelnicek, css);
+				webView.loadDataWithBaseURL(base, styled, mime, encoding, null);
 			}
 		}
 	}

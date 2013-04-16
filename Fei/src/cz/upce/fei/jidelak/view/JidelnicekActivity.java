@@ -139,10 +139,13 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 			case SETTINGS_ACTIVITY_RESULT :
-				if (resultCode == SettingsActivity.CHANGED) {
+				if ((resultCode & SettingsActivity.CHANGED_FRAGMENT) != 0) {
 					controller.recreateFragments();
 					initSectionsPagerAdapter();
 				}
+        if  ((resultCode & SettingsActivity.CHANGED_STYL) != 0) {
+					controller.doFullRestore();
+        }
 				break;
 		}
 	}

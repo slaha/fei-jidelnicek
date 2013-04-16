@@ -17,8 +17,11 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	public static String PREFERENCE_LAST_UPDATE = "pref_last_update";
 	public static String PREFERENCE_CSS = "pref_look_css";
 
-	public static final int NO_CHANGE = -1;
-	public static final int CHANGED = 1;
+	public static final int NO_CHANGE = 0;
+	public static final int CHANGED_FRAGMENT = 1;
+	public static final int CHANGED_STYL = 2;
+
+  private int result = NO_CHANGE;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -39,11 +42,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 
 		if (arg0 == findPreference(PREFERENCE_CSS)) {
 			if (!((ListPreference) arg0).getValue().equals(arg1)) {
-				Dialog dlg = DialogUtils.getRefreshDialog(SettingsActivity.this);
-				dlg.show();
+			  result = result | CHANGED_STYL;
+			  setResult(result);
 			}
 		} else {
-			setResult(CHANGED);
+      result = result | CHANGED_FRAGMENT;
+			setResult(result);
 		}
 
 		return true;

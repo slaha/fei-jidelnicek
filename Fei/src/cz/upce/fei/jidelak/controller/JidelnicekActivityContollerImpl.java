@@ -65,11 +65,9 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		} else {
 
 			IJidelnicekFragment jidelnicekFragment = getFragment(typ);
-			CssTyp cssTyp = prefferenceManager.getCssTyp();
 
-			String surroundedResult = HtmlHelper.surroundHtml(result, cssTyp);
 
-			jidelnicekFragment.setJidelnicek(surroundedResult);
+			jidelnicekFragment.setJidelnicek(result);
 			jidelnicekFragment.updateJidelnicek();
 
 			storeToDB(result, typ);
