@@ -6,10 +6,8 @@ import android.support.v4.app.Fragment;
 import cz.upce.fei.jidelak.dao.IDao;
 import cz.upce.fei.jidelak.dao.JidelnicekDaoImpl;
 import cz.upce.fei.jidelak.downloader.JidelnicekDownloader;
-import cz.upce.fei.jidelak.model.CssTyp;
 import cz.upce.fei.jidelak.model.JidelnicekTyp;
 import cz.upce.fei.jidelak.utils.DialogUtils;
-import cz.upce.fei.jidelak.utils.HtmlHelper;
 import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 import cz.upce.fei.jidelak.view.IJidelnicekActivity;
 import cz.upce.fei.jidelak.view.fragments.FeiJidelnicekFragmentImpl;
@@ -22,9 +20,9 @@ import java.util.List;
 
 public class JidelnicekActivityContollerImpl implements IJidelnicekActivityController, Serializable {
 
-	private  IJidelnicekActivity jidelnicekActivity;
+	private IJidelnicekActivity jidelnicekActivity;
 	private Context ctx;
-	
+
 	private IJidelnicekFragment kampusTydenniJidelnicekFragment;
 	private IJidelnicekFragment feiTydenniJidelnicekFragment;
 	private final List<IJidelnicekFragment> jidelnicky;
@@ -32,7 +30,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	private PrefferenceManager prefferenceManager;
 
 	public JidelnicekActivityContollerImpl(IJidelnicekActivity jidelnicekActivity) {
-		
+
 		this.jidelnicekActivity = jidelnicekActivity;
 		this.ctx = jidelnicekActivity.getContext();
 
@@ -41,14 +39,11 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		this.jidelnicky = new ArrayList<IJidelnicekFragment>();
 		createFragments();
 	}
-	
+
 	private void createFragments() {
 
 		this.kampusTydenniJidelnicekFragment = new KampusJidelnicekFragmentImpl();
 		this.feiTydenniJidelnicekFragment = new FeiJidelnicekFragmentImpl();
-
-		if (isDownloadFeiEnabled()) {
-		}
 	}
 
 	private void startDownload(JidelnicekTyp typ, RefreshViewHelper refreshView) {
@@ -80,7 +75,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 		IDao dao = new JidelnicekDaoImpl(ctx);
 		dao.open();
 		for (IJidelnicekFragment jidelnicekFragment : getFragments()) {
-			
+
 			String jidelnicek = dao.getJidelnicek(jidelnicekFragment.getTyp());
 			jidelnicekFragment.setJidelnicek(jidelnicek);
 			jidelnicekFragment.updateJidelnicek();
@@ -92,7 +87,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	public boolean isFirstRun() {
 		return prefferenceManager.isFirstRun();
 	}
-	
+
 	@Override
 	public Dialog getFirstRunDialog() {
 
@@ -100,19 +95,18 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 
 	private boolean isDownloadFeiEnabled() {
-		return  prefferenceManager.isDownloadFeiEnabled();
+		return prefferenceManager.isDownloadFeiEnabled();
 	}
-	
+
 	@Override
 	public void doRefresh(RefreshViewHelper imageView) {
 		IJidelnicekFragment currentFragment = getCurrentJidelnicekFragment();
-		
+
 		if (currentFragment == feiTydenniJidelnicekFragment) {
 			if (isDownloadFeiEnabled()) {
 				startDownload(JidelnicekTyp.FEI, imageView);
 			}
-		}
-		else if (currentFragment == kampusTydenniJidelnicekFragment) {
+		} else if (currentFragment == kampusTydenniJidelnicekFragment) {
 			startDownload(JidelnicekTyp.KAMPUS, imageView);
 		}
 	}
@@ -125,25 +119,23 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	}
 
 	@Override
-	public  void initFragments() {
-		synchronized (jidelnicky) {
-			jidelnicky.clear();
+	public void initFragments() {
+		jidelnicky.clear();
 
-			jidelnicky.add(kampusTydenniJidelnicekFragment);
+		jidelnicky.add(kampusTydenniJidelnicekFragment);
 
-			if (isDownloadFeiEnabled()) {
-				if (prefferenceManager.isDefaultScreen(JidelnicekTyp.KAMPUS)) {
-					jidelnicky.add(feiTydenniJidelnicekFragment);
-				} else {
-					jidelnicky.add(0, feiTydenniJidelnicekFragment);
-				}
+		if (isDownloadFeiEnabled()) {
+			if (prefferenceManager.isDefaultScreen(JidelnicekTyp.KAMPUS)) {
+				jidelnicky.add(feiTydenniJidelnicekFragment);
+			} else {
+				jidelnicky.add(0, feiTydenniJidelnicekFragment);
 			}
 		}
 	}
 
 	@Override
 	public List<IJidelnicekFragment> getFragments() {
-		
+
 		return jidelnicky;
 	}
 
@@ -154,7 +146,7 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	@Override
 	public void doFullRefresh(RefreshViewHelper progress) {
 		startDownload(JidelnicekTyp.KAMPUS, progress);
-		
+
 		if (isDownloadFeiEnabled()) {
 			startDownload(JidelnicekTyp.FEI, progress);
 		}
@@ -175,10 +167,10 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 	public Context getContext() {
 		return ctx;
 	}
-	
+
 	private Fragment getCurrentFragment() {
 		int currentIndex = jidelnicekActivity.getViewPager().getCurrentItem();
-		return  jidelnicekActivity.getFragmentPagerAdapter().getItem(currentIndex);
+		return jidelnicekActivity.getFragmentPagerAdapter().getItem(currentIndex);
 	}
 
 	private IJidelnicekFragment getFragment(JidelnicekTyp typ) {
@@ -189,12 +181,22 @@ public class JidelnicekActivityContollerImpl implements IJidelnicekActivityContr
 			}
 		}
 
-		return  null;
+		return null;
 	}
 
 	@Override
 	public void recreateFragments() {
 		//createFragments();
 		initFragments();
+	}
+
+	@Override
+	public void addFragment(Fragment fragment, String title) {
+		if (JidelnicekTyp.FEI.toString().equals(title)) {
+			this.feiTydenniJidelnicekFragment = new FeiJidelnicekFragmentImpl();
+		} else if (JidelnicekTyp.KAMPUS.toString().equals(title)) {
+			this.kampusTydenniJidelnicekFragment = new KampusJidelnicekFragmentImpl();
+		}
+
 	}
 }

@@ -9,15 +9,14 @@ import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
 	IJidelnicekActivityController controller;
-	
+
 	public SectionsPagerAdapter(FragmentManager fm, IJidelnicekActivityController controller) {
 		super(fm);
 		Log.i("SectionsPagerAdapter", "constructor");
 		this.controller = controller;
-		controller.initFragments();
 	}
 
-	
+
 	@Override
 	public Fragment getItem(int i) {
 		Log.i("SectionsPagerAdapter", "getItem " + i);

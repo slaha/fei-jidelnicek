@@ -3,7 +3,9 @@ package cz.upce.fei.jidelak.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,34 +16,56 @@ import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
 import cz.upce.fei.jidelak.controller.JidelnicekActivityContollerImpl;
 import cz.upce.fei.jidelak.utils.RefreshViewHelper;
 
-public class JidelnicekActivity extends FragmentActivity implements IJidelnicekActivity  {
+public class JidelnicekActivity extends FragmentActivity implements IJidelnicekActivity {
 
 	private static final int SETTINGS_ACTIVITY_RESULT = 0x0001;
+	private static final String TABS_COUNT = "tabs_count";
+	private static final String TITLES = "titles";
 
 	private IJidelnicekActivityController controller;
 	private Dialog dialog;
-	
+
 	private FragmentStatePagerAdapter mSectionsPagerAdapter;
 
 	private ViewPager mViewPager;
 
 	private RefreshViewHelper refreshView;
 
+	private Bundle savedInstanceState;
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_jidelnicek);
 
+		this.savedInstanceState = savedInstanceState;
 		controller = new JidelnicekActivityContollerImpl(this);
-		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), controller);
 
-		initSectionsPagerAdapter();
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+		if (savedInstanceState == null) {
+			controller.initFragments();
+		} else {
+			Integer count = savedInstanceState.getInt(TABS_COUNT);
+			String[] titles = savedInstanceState.getStringArray(TITLES);
+			for (int i = 0; i < count; i++) {
+				controller.addFragment(getFragment(i), titles[i]);
+			}
+			controller.initFragments();
+		}
+
+//		initSectionsPagerAdapter();
 
 		if (controller.isFirstRun()) {
 			dialog = controller.getFirstRunDialog();
 		}
-		
+
 		controller.doFullRestore();
+		if (Build.VERSION.SDK_INT >= 11) {
+			invalidateOptionsMenu();
+		}
 	}
 
 	@Override
@@ -59,18 +83,18 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 			dialog.show();
 		}
 	}
-	
-	
+
+
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
+
 		//..close and null dialog (if there is any)
 		if (dialog != null) {
 			if (dialog.isShowing()) {
 				dialog.dismiss();
 			}
-			
+
 			dialog = null;
 		}
 	}
@@ -80,9 +104,24 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 		getMenuInflater().inflate(R.menu.activity_jidelnicek, menu);
 
 		MenuItem item = menu.findItem(R.id.menu_refresh);
-		this.refreshView =  new RefreshViewHelper(item, this);
+		this.refreshView = new RefreshViewHelper(item, this);
 
 		return true;
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		int pocetTabu = mSectionsPagerAdapter.getCount();
+
+		CharSequence[] titly = new String[pocetTabu];
+		for (int i = 0; i < pocetTabu; i++) {
+			titly[i] = mSectionsPagerAdapter.getPageTitle(i);
+		}
+
+		outState.putInt(TABS_COUNT, pocetTabu);
+		outState.putCharSequenceArray(TITLES, titly);
 	}
 
 	@Override
@@ -95,7 +134,7 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 				controller.doRefresh(refreshView);
 				return true;
 			case R.id.menu_refreshAll:
-					controller.doFullRefresh(refreshView);
+				controller.doFullRefresh(refreshView);
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -138,29 +177,35 @@ public class JidelnicekActivity extends FragmentActivity implements IJidelnicekA
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-			case SETTINGS_ACTIVITY_RESULT :
+			case SETTINGS_ACTIVITY_RESULT:
 				if ((resultCode & SettingsActivity.CHANGED_FRAGMENT) != 0) {
 					controller.recreateFragments();
 					initSectionsPagerAdapter();
 				}
-        if  ((resultCode & SettingsActivity.CHANGED_STYL) != 0) {
+				if ((resultCode & SettingsActivity.CHANGED_STYL) != 0) {
 					controller.doFullRestore();
-        }
+				}
 				break;
 		}
 	}
 
 
 	private void initSectionsPagerAdapter() {
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-				getSupportFragmentManager(),
-				controller
-		);
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), controller);
 
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+	}
 
-		for(int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-			mSectionsPagerAdapter.getItem(i);
+	private Fragment getFragment(int position) {
+		if (savedInstanceState == null) {
+			return mSectionsPagerAdapter.getItem(position);
 		}
+
+		String tag = getFragmentTag(position);
+		return getSupportFragmentManager().findFragmentByTag(tag);
+	}
+
+	private String getFragmentTag(int position) {
+		return "android:switcher:" + R.id.pager + ":" + position;
 	}
 }
