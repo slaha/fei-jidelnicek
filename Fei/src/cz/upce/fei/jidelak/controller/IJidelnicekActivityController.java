@@ -1,60 +1,72 @@
 package cz.upce.fei.jidelak.controller;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import cz.upce.fei.jidelak.model.JidelnicekTyp;
-import cz.upce.fei.jidelak.utils.RefreshViewHelper;
-import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
+import cz.upce.fei.jidelak.model.MenuType;
+import cz.upce.fei.jidelak.view.refresh.RefreshViewHelper;
 
-import java.util.List;
-
-public interface IJidelnicekActivityController {
+public interface IJidelnicekActivityController<T> {
 
 	/**
-	 * Zkontroluje, je app spuštěna poprve (není vyplněno ST ani heslo)
-	 *
-	 * @return true jestli je spuštěno poprve, false jinak
+	 * Check if app is launched for the first time
+	 * 
+	 * @return true if it is first launch ever; false otherwise
 	 */
 	boolean isFirstRun();
 
 	/**
-	 * Zaktualizuje jídelníček pro aktuální obrazovku
+	 * Refresh current screen
+	 * 
+	 * @param imageView
+	 *            progress
 	 */
 	void doRefresh(RefreshViewHelper imageView);
 
 	/**
-	 * Zaktualizuje jídelníček pro obě menzy
-	 *
-	 * @param imageView iv
+	 * Refresh all screens
+	 * 
+	 * @param imageView
+	 *            progress
 	 */
 	void doFullRefresh(RefreshViewHelper imageView);
 
 	/**
-	 * Vytvoří dialog zobrazený pokud je aplikace spuštěna poprve
-	 *
+	 * Creates dialog to notify user to do some settings
+	 * 
 	 * @return dialog
 	 */
 	Dialog getFirstRunDialog();
-
-	List<IJidelnicekFragment> getFragments();
-
-	void initFragments();
 
 	/**
 	 * Restores state from DB after start
 	 */
 	void doFullRestore();
 
+	/**
+	 * Check if now is newer week than on last update
+	 * 
+	 * @return true if is now newer week; false otherwise
+	 */
 	boolean updateOnNewWeek();
 
+	/**
+	 * Creates refresh dialog
+	 * 
+	 * @return refresh dialog
+	 */
 	Dialog getNewWeekRefreshDialog(RefreshViewHelper imageView);
 
-	Context getContext();
+	/**
+	 * sets result downloaded from web to fragment
+	 * 
+	 * @param result
+	 *            downloaded string
+	 * @param typ
+	 *            type of downloaded menu
+	 */
+	void setResult(String result, MenuType typ);
 
-	void setResult(String result, JidelnicekTyp typ);
-
-	void recreateFragments();
-
-	void addFragment(Fragment fragment, String title);
+	/**
+	 * Saves that app launched for the first time already
+	 */
+	void setFirstRunAlreadyDone();
 }

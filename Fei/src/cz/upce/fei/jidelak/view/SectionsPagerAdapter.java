@@ -3,41 +3,40 @@ package cz.upce.fei.jidelak.view;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
-import cz.upce.fei.jidelak.controller.IJidelnicekActivityController;
+import cz.upce.fei.jidelak.model.FragmentModel;
+import cz.upce.fei.jidelak.view.fragments.IJidelnicekFragment;
 
-public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+public class SectionsPagerAdapter<T extends IJidelnicekFragment> extends FragmentStatePagerAdapter {
 
-	IJidelnicekActivityController controller;
+	private FragmentModel<T> model;
 
-	public SectionsPagerAdapter(FragmentManager fm, IJidelnicekActivityController controller) {
+	public SectionsPagerAdapter(FragmentManager fm, FragmentModel<T> model) {
 		super(fm);
-		Log.i("SectionsPagerAdapter", "constructor");
-		this.controller = controller;
+		this.model = model;
 	}
-
 
 	@Override
 	public Fragment getItem(int i) {
-		Log.i("SectionsPagerAdapter", "getItem " + i);
-		Log.i("SectionsPagerAdapter", controller.getFragments().toString());
-		return (Fragment) controller.getFragments().get(i);
+		return (Fragment) model.get(i);
 	}
 
 	@Override
 	public int getCount() {
-		return controller.getFragments().size();
+		return model.count();
 	}
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		Log.i("SectionsPagerAdapter", "getPageTitle " + position);
-		return controller.getFragments().get(position).getName();
+		return model.get(position).getName();
 	}
 
 	@Override
 	public int getItemPosition(Object object) {
-		return controller.getFragments().indexOf(object);
+		int position = model.indexOf(object);
+		if (position < 0) {
+			return POSITION_NONE;
+		}
+		return position;
 	}
 
 }

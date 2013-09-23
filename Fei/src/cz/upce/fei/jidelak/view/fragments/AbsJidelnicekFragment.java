@@ -9,34 +9,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import cz.upce.fei.jidelak.R;
-import cz.upce.fei.jidelak.controller.PrefferenceManager;
+import cz.upce.fei.jidelak.controller.impl.PrefferenceManagerImpl;
 import cz.upce.fei.jidelak.model.CssTyp;
-import cz.upce.fei.jidelak.model.JidelnicekTyp;
-import cz.upce.fei.jidelak.utils.HtmlHelper;
+import cz.upce.fei.jidelak.model.Menu;
+import cz.upce.fei.jidelak.model.MenuType;
 
 public abstract class AbsJidelnicekFragment extends Fragment implements IJidelnicekFragment {
 
-
-	private static final String base = "file:///android_asset/";
-	private static final String mime = "text/html";
-	private static final String encoding = "utf-8";
 	private static final String TAG = AbsJidelnicekFragment.class.getSimpleName();
 
+	private static final String BASE = "file:///android_asset/";
+	private static final String MIME = "text/html";
+	private static final String ENCODING = "utf-8";
+
 	protected WebView webView;
-	protected String jidelnicek;
+	protected Menu menu;
 
 	public final static String KEY_JIDELNICEK = "key_jidelnicek";
 
-	protected PrefferenceManager prefferenceManager;
+	protected PrefferenceManagerImpl prefferenceManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		if (savedInstanceState != null) {
-			this.jidelnicek = savedInstanceState.getString(KEY_JIDELNICEK, null);
+			this.menu = savedInstanceState.getParcelable(KEY_JIDELNICEK);
 		}
 
-		this.prefferenceManager = new PrefferenceManager(getActivity());
+		this.prefferenceManager = new PrefferenceManagerImpl(getActivity());
 
 		super.onCreate(savedInstanceState);
 	}
@@ -47,7 +47,7 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 
 		webView = (WebView) view.findViewById(R.id.webView);
 
-		if (webView != null && jidelnicek != null) {
+		if (webView != null && menu != null) {
 			updateJidelnicek();
 		}
 
@@ -57,27 +57,27 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (jidelnicek != null) {
-			outState.putString(KEY_JIDELNICEK, jidelnicek);
+		if (menu != null) {
+			outState.putParcelable(KEY_JIDELNICEK, menu);
 		}
 	}
 
 	@Override
-	public void setJidelnicek(String jidelnicek) {
+	public void setMenu(Menu menu) {
 
-		this.jidelnicek = jidelnicek;
+		this.menu = menu;
 	}
 
 	@Override
 	public void updateJidelnicek() {
 
-		if (jidelnicek != null && !jidelnicek.isEmpty()) {
+		if (menu != null && !menu.isEmpty()) {
 			if (webView != null) {
 				webView.clearView();
 
 				CssTyp css = prefferenceManager.getCssTyp();
-				String styled = HtmlHelper.surroundHtml(jidelnicek, css);
-				webView.loadDataWithBaseURL(base, styled, mime, encoding, null);
+				String styled = menu.getStylledHtml(css);
+				webView.loadDataWithBaseURL(BASE, styled, MIME, ENCODING, null);
 			} else {
 				//..webView je null
 				if (getActivity() == null) {
@@ -85,9 +85,7 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 				} else {
 
 					AlertDialog.Builder bld = new AlertDialog.Builder(getActivity());
-					bld
-						.setMessage("WebView je null")
-						.setPositiveButton("OK", null);
+					bld.setMessage("WebView je null").setPositiveButton("OK", null);
 
 					bld.create().show();
 				}
@@ -99,5 +97,5 @@ public abstract class AbsJidelnicekFragment extends Fragment implements IJidelni
 		return getTyp().toString();
 	}
 
-	public abstract JidelnicekTyp getTyp();
+	public abstract MenuType getTyp();
 }
